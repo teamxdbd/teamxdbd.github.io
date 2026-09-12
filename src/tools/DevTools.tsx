@@ -235,7 +235,7 @@ export function Base64Decode() {
     try {
       setOutput(decodeURIComponent(escape(atob(input.trim()))));
       setError('');
-    } catch (e) {
+    } catch {
       setError('Invalid Base64 input.');
       setOutput('');
     }
@@ -271,12 +271,13 @@ export function URLEncode() {
 
 export function URLDecode() {
   const [input, setInput] = useState('');
-  const [error, setError] = useState('');
   let output = '';
-  try { output = decodeURIComponent(input); } catch { output = ''; setError(''); }
+  let error = '';
+  try { output = decodeURIComponent(input); } catch { error = 'Invalid URL-encoded input.'; }
   return (
     <div className="space-y-6">
       <ToolInput label="Encoded URL" value={input} onChange={setInput} placeholder="Enter URL-encoded text..." rows={5} mono />
+      {error && <ToolError message={error} />}
       <ToolInput label="Decoded Text" value={output} onChange={() => {}} rows={5} readOnly />
       <CopyButton text={output} />
     </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ToolInput, ToolButton, ToolError } from '@/components/ToolUI';
+import { ToolButton, ToolError } from '@/components/ToolUI';
 import { Breadcrumbs } from '@/components/ToolCard';
 import { Mail, Send, MessageCircle, AlertTriangle } from 'lucide-react';
 

@@ -15,10 +15,6 @@ export interface Category {
   icon: string;
 }
 
-export interface ToolComponentProps {
-  // tools can use whatever local state they need
-}
-
 export interface ToolEntry extends Tool {
   component: ComponentType;
 }
