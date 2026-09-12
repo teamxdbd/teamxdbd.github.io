@@ -21,7 +21,7 @@ function useImageUpload() {
   return { imageSrc, setImageSrc, fileName, setFileName, error, setError, fileRef, handleFile };
 }
 
-function UploadZone({ onFile, fileRef }: { onFile: (f: File) => void; fileRef: React.RefObject<HTMLInputElement | null> }) {
+function UploadZone({ onFile, fileRef }: { onFile: (f: File) => void; fileRef: React.RefObject<HTMLInputElement> }) {
   return (
     <>
       <div
@@ -61,10 +61,12 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 // === Image Converter (generic) ===
-export function ImageConverter({ targetFormat }: { targetFormat: string }) {
+export function ImageConverter({ targetFormat: fixedFormat }: { targetFormat?: string } = {}) {
   const { imageSrc, fileName, error, setError, fileRef, handleFile } = useImageUpload();
   const [outputUrl, setOutputUrl] = useState('');
+  const [selectedFormat, setSelectedFormat] = useState('png');
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const targetFormat = fixedFormat ?? selectedFormat;
 
   const mimeTypes: Record<string, string> = {
     png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif', bmp: 'image/bmp', ico: 'image/x-icon',
@@ -94,6 +96,18 @@ export function ImageConverter({ targetFormat }: { targetFormat: string }) {
       {error && <ToolError message={error} />}
       {imageSrc && (
         <>
+          {!fixedFormat && (
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Convert to</label>
+              <select
+                value={selectedFormat}
+                onChange={(e) => setSelectedFormat(e.target.value)}
+                className="rounded-lg bg-slate-900 border border-slate-700 px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+              >
+                {Object.keys(mimeTypes).map((f) => <option key={f} value={f}>{f.toUpperCase()}</option>)}
+              </select>
+            </div>
+          )}
           <div className="flex flex-wrap gap-4">
             <div className="flex-1 min-w-40">
               <p className="text-sm text-slate-400 mb-2">Original</p>

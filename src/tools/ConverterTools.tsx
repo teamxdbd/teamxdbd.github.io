@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ToolInput, CopyButton } from '@/components/ToolUI';
+import { CopyButton } from '@/components/ToolUI';
 
 interface UnitDef {
   name: string;
@@ -8,7 +8,8 @@ interface UnitDef {
 }
 
 function makeConverter(units: Record<string, UnitDef>) {
-  return function Converter({ defaultFrom, defaultTo }: { defaultFrom: string; defaultTo: string }) {
+  const keys = Object.keys(units);
+  return function Converter({ defaultFrom = keys[0], defaultTo = keys[1] ?? keys[0] }: { defaultFrom?: string; defaultTo?: string } = {}) {
     const [value, setValue] = useState('1');
     const [from, setFrom] = useState(defaultFrom);
     const [to, setTo] = useState(defaultTo);

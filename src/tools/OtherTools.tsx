@@ -5,16 +5,12 @@ import { Download } from 'lucide-react';
 // === SRT to VTT ===
 export function SRTToVTT() {
   const [input, setInput] = useState('');
-  const [error, setError] = useState('');
-  let output = '';
-  try {
-    output = 'WEBVTT\n\n' + input
-      .replace(/\r+/g, '')
-      .replace(/^\d+\s*$/gm, '')
-      .replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, '$1.$2')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-  } catch { /* */ }
+  const output = 'WEBVTT\n\n' + input
+    .replace(/\r+/g, '')
+    .replace(/^\d+\s*$/gm, '')
+    .replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, '$1.$2')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
   return (
     <div className="space-y-6">
       <ToolInput label="SRT Input" value={input} onChange={setInput} placeholder="1\n00:00:01,000 --> 00:00:04,000\nHello World" rows={8} mono />

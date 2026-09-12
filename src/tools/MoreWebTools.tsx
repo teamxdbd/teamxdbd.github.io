@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ToolInput, ToolButton, CopyButton, ToolError } from '@/components/ToolUI';
 import { Check } from 'lucide-react';
+import jsQR from 'jsqr';
 
 // === WordPress Password Generator ===
 export function WordPressPasswordGenerator() {
@@ -321,7 +322,7 @@ export function FindFacebookID() {
 export function QRCodeDecoder() {
   const [decoded, setDecoded] = useState('');
   const [error, setError] = useState('');
-  const fileRef = useState<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const handleFile = (file: File) => {
     if (!file.type.startsWith('image/')) { setError('Please select an image file.'); return; }
     setError('');
@@ -337,15 +338,10 @@ export function QRCodeDecoder() {
           canvas.height = img.height;
           ctx.drawImage(img, 0, 0);
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const code = (window as unknown as { jsQR?: (data: ImageData['data'], w: number, h: number) => { data: string } | null }).jsQR;
-          if (code) {
-            const result = code(imageData.data, canvas.width, canvas.height);
-            if (result) setDecoded(result.data);
-            else setError('No QR code found in the image.');
-          } else {
-            setError('QR decoding library not available. This tool requires the jsQR library.');
-          }
-        } catch (e) { setError('Could not decode the QR code.'); }
+          const result = jsQR(imageData.data, canvas.width, canvas.height);
+          if (result) setDecoded(result.data);
+          else setError('No QR code found in the image.');
+        } catch { setError('Could not decode the QR code.'); }
       };
       img.src = reader.result as string;
     };
@@ -353,9 +349,9 @@ export function QRCodeDecoder() {
   };
   return (
     <div className="space-y-6">
-      <div onClick={() => fileRef[0]?.current?.click()} className="border-2 border-dashed border-slate-600 rounded-xl p-8 text-center cursor-pointer hover:border-cyan-500/50 transition-colors">
+      <div onClick={() => fileRef.current?.click()} className="border-2 border-dashed border-slate-600 rounded-xl p-8 text-center cursor-pointer hover:border-cyan-500/50 transition-colors">
         <p className="text-sm text-slate-400">Click to upload a QR code image to decode</p>
-        <input ref={fileRef[0]} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
       </div>
       {error && <ToolError message={error} />}
       {decoded && (
