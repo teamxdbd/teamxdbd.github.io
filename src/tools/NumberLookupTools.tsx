@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { ToolButton, ToolError, CopyButton } from '@/components/ToolUI';
-import { Phone, Search, CheckCircle2, XCircle } from 'lucide-react';
+import { ToolButton, ToolError } from '@/components/ToolUI';
+import { Phone, Search, CheckCircle2 } from 'lucide-react';
 
 interface LookupResult {
   valid: boolean;
@@ -9,6 +9,37 @@ interface LookupResult {
   number: string;
   checkCode: string;
   color: string;
+  source: 'api' | 'prefix';
+}
+
+type ApiPayload = Record<string, unknown>;
+
+function asRecord(value: unknown): ApiPayload {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as ApiPayload : {};
+}
+
+function firstString(...values: unknown[]): string | undefined {
+  return values.find((value): value is string => typeof value === 'string' && value.trim().length > 0)?.trim();
+}
+
+function createApiResult(payload: unknown, normalized: string): LookupResult | null {
+  const root = asRecord(payload);
+  const data = asRecord(root.data);
+  const details = asRecord(data.details);
+  const source = { ...root, ...data, ...details };
+  const operator = firstString(source.operator, source.operator_name, source.operatorName, source.carrier, source.network, source.provider);
+  if (!operator) return null;
+  const prefix = firstString(source.prefix, source.operator_prefix, source.operatorPrefix) || normalized.slice(0, 3);
+  const localData = OPERATOR_DATA[prefix];
+  return {
+    valid: source.valid !== false,
+    operator,
+    prefix,
+    number: firstString(source.number, source.phone, source.mobile) || normalized,
+    checkCode: localData?.checkCode || 'See your operator instructions',
+    color: localData?.color || '#06B6D4',
+    source: 'api',
+  };
 }
 
 const OPERATOR_DATA: Record<string, { name: string; checkCode: string; color: string }> = {
@@ -33,9 +64,10 @@ export function BDNumberLookup() {
   const [input, setInput] = useState('');
   const [result, setResult] = useState<LookupResult | null>(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<LookupResult[]>([]);
 
-  const lookup = () => {
+  const lookup = async () => {
     const raw = input.trim().replace(/[\s-]/g, '');
     setError(''); setResult(null);
 
@@ -50,24 +82,38 @@ export function BDNumberLookup() {
       return;
     }
 
-    const prefix = normalized.slice(0, 3);
-    const opData = OPERATOR_DATA[prefix];
-
-    if (!opData) {
-      setError(`Unknown operator prefix: ${prefix}. Valid prefixes are 013, 014, 015, 016, 017, 018, 019.`);
+    setLoading(true);
+    try {
+      const response = await fetch(`https://number-info-bd.vercel.app/api/lookup?number=${encodeURIComponent(normalized)}`);
+      const payload: unknown = await response.json();
+      if (!response.ok) throw new Error('The lookup service returned an error.');
+      const apiResult = createApiResult(payload, normalized);
+      if (!apiResult) throw new Error('The lookup service returned an unexpected response.');
+      setResult(apiResult);
+      setHistory((h) => [apiResult, ...h.slice(0, 9)]);
       return;
+    } catch {
+      const prefix = normalized.slice(0, 3);
+      const opData = OPERATOR_DATA[prefix];
+      if (!opData) {
+        setError('The lookup service is unavailable, and this number has no recognized local prefix.');
+        return;
+      }
+      const fallbackResult: LookupResult = {
+        valid: true,
+        operator: opData.name,
+        prefix,
+        number: normalized,
+        checkCode: opData.checkCode,
+        color: opData.color,
+        source: 'prefix',
+      };
+      setResult(fallbackResult);
+      setHistory((h) => [fallbackResult, ...h.slice(0, 9)]);
+      setError('Live lookup was unavailable. Showing the original operator from the number prefix.');
+    } finally {
+      setLoading(false);
     }
-
-    const res: LookupResult = {
-      valid: true,
-      operator: opData.name,
-      prefix,
-      number: normalized,
-      checkCode: opData.checkCode,
-      color: opData.color,
-    };
-    setResult(res);
-    setHistory((h) => [res, ...h.slice(0, 9)]);
   };
 
   return (
@@ -93,9 +139,9 @@ export function BDNumberLookup() {
             maxLength={13}
             className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white font-mono text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
           />
-          <ToolButton onClick={lookup}>
+          <ToolButton onClick={lookup} disabled={loading || !input.trim()}>
             <span className="flex items-center gap-2">
-              <Search className="h-4 w-4" /> Lookup
+              <Search className="h-4 w-4" /> {loading ? 'Looking up...' : 'Lookup'}
             </span>
           </ToolButton>
         </div>
@@ -127,6 +173,11 @@ export function BDNumberLookup() {
               </div>
               <div className="text-xs text-slate-500 mt-1">
                 Note: Due to Mobile Number Portability (MNP), the current carrier may differ from the original operator shown here.
+              </div>
+              <div className="text-xs mt-2">
+                <span className={`px-2 py-0.5 rounded font-medium ${result.source === 'api' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                  {result.source === 'api' ? 'Live API' : 'Prefix fallback'}
+                </span>
               </div>
             </div>
           </div>
