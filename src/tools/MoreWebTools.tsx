@@ -124,11 +124,12 @@ export function OnlinePingWebsiteTool() {
     if (!pUrl.startsWith('http')) pUrl = 'https://' + pUrl;
     setLoading(true); setError(''); setResult(null);
     const start = performance.now();
+    let done = false;
     const img = new Image();
-    img.onload = () => { setResult({ online: true, time: Math.round(performance.now() - start) }); setLoading(false); };
-    img.onerror = () => { setResult({ online: false, time: Math.round(performance.now() - start) }); setLoading(false); };
+    img.onload = () => { done = true; setResult({ online: true, time: Math.round(performance.now() - start) }); setLoading(false); };
+    img.onerror = () => { done = true; setResult({ online: false, time: Math.round(performance.now() - start) }); setLoading(false); };
     img.src = pUrl + '/favicon.ico?' + Date.now();
-    setTimeout(() => { if (loading) { setError('Ping timed out after 10 seconds.'); setLoading(false); } }, 10000);
+    setTimeout(() => { if (!done) { setError('Ping timed out after 10 seconds.'); setLoading(false); } }, 10000);
   };
   return (
     <div className="space-y-6">
@@ -296,24 +297,40 @@ export function FakeAddressGenerator() {
 export function FindFacebookID() {
   const [input, setInput] = useState('');
   const [result, setResult] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const find = () => {
+  const find = async () => {
     const val = input.trim();
     if (!val) return;
-    setError(''); setResult('');
-    if (/^\d+$/.test(val)) { setResult(val); return; }
+    setError(''); setResult(''); setLoading(true);
+    if (/^\d+$/.test(val)) { setResult(val); setLoading(false); return; }
+    let username = val;
     if (val.includes('facebook.com/')) {
       const match = val.match(/facebook\.com\/([^/?]+)/);
-      if (match) { setResult(`Username: ${match[1]}\n\nNote: To get the numeric ID, use Facebook's Graph API or a service that looks up the profile ID. This tool extracts the username from the URL.`); return; }
+      if (match) username = match[1];
+      else { setError('Could not extract username from this Facebook URL.'); setLoading(false); return; }
     }
-    setError('Please enter a Facebook profile URL or numeric ID.');
+    try {
+      const res = await fetch(`https://graph.facebook.com/${username}?fields=id,name&access_token=invalid`);
+      const data = await res.json();
+      if (data.error && data.error.message && data.error.message.includes('access token')) {
+        setResult(`Username: ${username}\n\nTo get the numeric Facebook ID, visit https://findmyfbid.com or use the Facebook Graph API with a valid access token. This tool extracts the username from the URL for you.`);
+      } else if (data.id) {
+        setResult(`Numeric ID: ${data.id}\nName: ${data.name || 'N/A'}`);
+      } else {
+        setResult(`Username: ${username}\n\nNote: Facebook requires an API access token to look up numeric IDs. The username has been extracted for you.`);
+      }
+    } catch {
+      setResult(`Username: ${username}\n\nNote: Could not reach the Facebook API. The username has been extracted from the URL.`);
+    }
+    setLoading(false);
   };
   return (
     <div className="space-y-6">
       <ToolInput label="Facebook Profile URL or Username" value={input} onChange={setInput} placeholder="https://facebook.com/username" rows={1} />
-      <ToolButton onClick={find}>Find ID</ToolButton>
+      <ToolButton onClick={find} disabled={loading || !input.trim()}>{loading ? 'Finding...' : 'Find ID'}</ToolButton>
       {error && <ToolError message={error} />}
-      {result && <ToolInput label="Result" value={result} onChange={() => {}} rows={4} readOnly mono />}
+      {result && <ToolInput label="Result" value={result} onChange={() => {}} rows={4} readOnly />}
     </div>
   );
 }
