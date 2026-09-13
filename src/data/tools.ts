@@ -182,4 +182,5 @@ export const tools: Tool[] = [
   { slug: 'srt-to-vtt', name: 'SRT to VTT', description: 'Convert SRT subtitle files to WebVTT format.', category: 'other', icon: 'Captions' },
   { slug: 'vtt-to-srt', name: 'VTT to SRT', description: 'Convert WebVTT subtitle files to SRT format.', category: 'other', icon: 'Captions' },
   { slug: 'youtube-thumbnail-downloader', name: 'YouTube Thumbnail Downloader', description: 'Download thumbnails from any YouTube video in multiple resolutions.', category: 'other', icon: 'Youtube' },
+  { slug: 'bd-number-lookup', name: 'BD Number Lookup', description: 'Identify the mobile operator for any Bangladeshi phone number by its prefix.', category: 'other', icon: 'Phone' },
 ];

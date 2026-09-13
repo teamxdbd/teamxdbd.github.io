@@ -29,6 +29,7 @@ import { WhatIsMyBrowser, WhatIsMyUserAgent, WhatIsMyScreenResolution, WebsiteSt
 import { WordPressPasswordGenerator, HTAccessRedirectGenerator, WebsiteSEOScoreChecker, OnlinePingWebsiteTool, WebsiteSpeedChecker, PageSizeChecker, OpenMultipleURLs } from '@/tools/MoreWebTools';
 // Other tools
 import { SRTToVTT, VTTToSRT, YouTubeThumbnailDownloader } from '@/tools/OtherTools';
+import { BDNumberLookup } from '@/tools/NumberLookupTools';
 
 const componentMap: Record<string, React.ComponentType> = {
   // Text
@@ -204,6 +205,7 @@ const componentMap: Record<string, React.ComponentType> = {
   'srt-to-vtt': SRTToVTT,
   'vtt-to-srt': VTTToSRT,
   'youtube-thumbnail-downloader': YouTubeThumbnailDownloader,
+  'bd-number-lookup': BDNumberLookup,
 };
 
 export const toolEntries: ToolEntry[] = tools.map((t) => ({
