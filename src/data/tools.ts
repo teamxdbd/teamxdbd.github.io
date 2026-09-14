@@ -183,4 +183,35 @@ export const tools: Tool[] = [
   { slug: 'vtt-to-srt', name: 'VTT to SRT', description: 'Convert WebVTT subtitle files to SRT format.', category: 'other', icon: 'Captions' },
   { slug: 'youtube-thumbnail-downloader', name: 'YouTube Thumbnail Downloader', description: 'Download thumbnails from any YouTube video in multiple resolutions.', category: 'other', icon: 'Youtube' },
   { slug: 'bd-number-lookup', name: 'BD Number Lookup', description: 'Identify the mobile operator for any Bangladeshi phone number by its prefix.', category: 'other', icon: 'Phone' },
+
+  // Everyday Tools
+  { slug: 'stopwatch', name: 'Stopwatch', description: 'A precision stopwatch with millisecond accuracy for timing activities.', category: 'everyday', icon: 'Timer' },
+  { slug: 'countdown-timer', name: 'Countdown Timer', description: 'Set a countdown timer with custom minutes and seconds.', category: 'everyday', icon: 'Clock' },
+  { slug: 'pomodoro-timer', name: 'Pomodoro Timer', description: 'Boost productivity with work/break cycles using the Pomodoro Technique.', category: 'everyday', icon: 'Timer' },
+  { slug: 'dice-roller', name: 'Dice Roller', description: 'Roll virtual dice with customizable count and sides (D4 to D100).', category: 'everyday', icon: 'Dice5' },
+  { slug: 'coin-flip', name: 'Coin Flip', description: 'Flip a virtual coin for quick heads or tails decisions.', category: 'everyday', icon: 'Coins' },
+  { slug: 'random-number-generator', name: 'Random Number Generator', description: 'Generate random numbers within a custom range.', category: 'everyday', icon: 'Hash' },
+  { slug: 'bmi-calculator', name: 'BMI Calculator', description: 'Calculate Body Mass Index and see your weight category.', category: 'everyday', icon: 'HeartPulse' },
+  { slug: 'tip-calculator', name: 'Tip Calculator', description: 'Calculate tips and split bills among multiple people.', category: 'everyday', icon: 'Calculator' },
+  { slug: 'compound-interest-calculator', name: 'Compound Interest Calculator', description: 'Calculate compound interest on investments with custom rates.', category: 'everyday', icon: 'Calculator' },
+  { slug: 'fuel-cost-calculator', name: 'Fuel Cost Calculator', description: 'Estimate fuel needed and total cost for a trip.', category: 'everyday', icon: 'Fuel' },
+  { slug: 'days-between-dates', name: 'Days Between Dates', description: 'Calculate the number of days, weeks, months, and years between two dates.', category: 'everyday', icon: 'CalendarDays' },
+  { slug: 'reading-time-estimator', name: 'Reading Time Estimator', description: 'Estimate reading time for any text based on words per minute.', category: 'everyday', icon: 'BookOpen' },
+
+  // Additional Text Tools
+  { slug: 'remove-duplicate-lines', name: 'Remove Duplicate Lines', description: 'Remove duplicate lines from text while preserving order.', category: 'text', icon: 'Copy' },
+  { slug: 'find-and-replace', name: 'Find and Replace', description: 'Find and replace text with optional regex and case sensitivity.', category: 'text', icon: 'Replace' },
+  { slug: 'reverse-text', name: 'Reverse Text', description: 'Reverse text by characters, words, or lines.', category: 'text', icon: 'FlipHorizontal' },
+  { slug: 'text-to-speech', name: 'Text to Speech', description: 'Read text aloud using your browser\'s speech synthesis.', category: 'text', icon: 'Volume2' },
+  { slug: 'text-compare', name: 'Text Compare', description: 'Compare two text blocks and highlight the differences.', category: 'text', icon: 'GitCompare' },
+
+  // Additional Dev Tools
+  { slug: 'markdown-to-html', name: 'Markdown to HTML', description: 'Convert Markdown text to clean HTML code.', category: 'dev', icon: 'FileCode' },
+  { slug: 'css-box-shadow-generator', name: 'CSS Box Shadow Generator', description: 'Generate CSS box-shadow code with a live preview.', category: 'dev', icon: 'Square' },
+  { slug: 'meta-tag-generator', name: 'Meta Tag Generator', description: 'Generate HTML meta tags for SEO and social media sharing.', category: 'dev', icon: 'Tag' },
+  { slug: 'robots-txt-generator', name: 'Robots.txt Generator', description: 'Generate a robots.txt file to control search engine crawling.', category: 'dev', icon: 'Bot' },
+  { slug: 'regex-tester', name: 'Regex Tester', description: 'Test regular expressions against text with live highlighting.', category: 'dev', icon: 'Regex' },
+  { slug: 'sha256-generator', name: 'SHA-256 Hash Generator', description: 'Generate SHA-256 hashes from any text input.', category: 'dev', icon: 'Hash' },
+  { slug: 'http-status-code-reference', name: 'HTTP Status Code Reference', description: 'Searchable reference for all common HTTP status codes.', category: 'dev', icon: 'FileCode' },
+  { slug: 'jwt-decoder', name: 'JWT Decoder', description: 'Decode JSON Web Tokens to inspect header and payload.', category: 'dev', icon: 'KeyRound' },
 ];

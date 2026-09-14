@@ -30,6 +30,9 @@ import { WordPressPasswordGenerator, HTAccessRedirectGenerator, WebsiteSEOScoreC
 // Other tools
 import { SRTToVTT, VTTToSRT, YouTubeThumbnailDownloader } from '@/tools/OtherTools';
 import { BDNumberLookup } from '@/tools/NumberLookupTools';
+import { Stopwatch, CountdownTimer, PomodoroTimer, DiceRoller, CoinFlip, RandomNumberGenerator, BMICalculator, TipCalculator, CompoundInterestCalculator, FuelCostCalculator, DaysBetweenDates, ReadingTimeEstimator } from '@/tools/EverydayTools';
+import { RemoveDuplicateLines, FindAndReplace, ReverseText, TextToSpeech, TextCompare } from '@/tools/MoreTextTools';
+import { MarkdownToHTML, BoxShadowGenerator, MetaTagGenerator, RobotsTxtGenerator, RegexTester, SHA256Generator, HTTPStatusCodeReference, JWTDecoder } from '@/tools/AdvancedDevTools';
 
 const componentMap: Record<string, React.ComponentType> = {
   // Text
@@ -206,6 +209,34 @@ const componentMap: Record<string, React.ComponentType> = {
   'vtt-to-srt': VTTToSRT,
   'youtube-thumbnail-downloader': YouTubeThumbnailDownloader,
   'bd-number-lookup': BDNumberLookup,
+  // Everyday
+  'stopwatch': Stopwatch,
+  'countdown-timer': CountdownTimer,
+  'pomodoro-timer': PomodoroTimer,
+  'dice-roller': DiceRoller,
+  'coin-flip': CoinFlip,
+  'random-number-generator': RandomNumberGenerator,
+  'bmi-calculator': BMICalculator,
+  'tip-calculator': TipCalculator,
+  'compound-interest-calculator': CompoundInterestCalculator,
+  'fuel-cost-calculator': FuelCostCalculator,
+  'days-between-dates': DaysBetweenDates,
+  'reading-time-estimator': ReadingTimeEstimator,
+  // Additional Text
+  'remove-duplicate-lines': RemoveDuplicateLines,
+  'find-and-replace': FindAndReplace,
+  'reverse-text': ReverseText,
+  'text-to-speech': TextToSpeech,
+  'text-compare': TextCompare,
+  // Additional Dev
+  'markdown-to-html': MarkdownToHTML,
+  'css-box-shadow-generator': BoxShadowGenerator,
+  'meta-tag-generator': MetaTagGenerator,
+  'robots-txt-generator': RobotsTxtGenerator,
+  'regex-tester': RegexTester,
+  'sha256-generator': SHA256Generator,
+  'http-status-code-reference': HTTPStatusCodeReference,
+  'jwt-decoder': JWTDecoder,
 };
 
 export const toolEntries: ToolEntry[] = tools.map((t) => ({

@@ -62,6 +62,12 @@ export const categories: Category[] = [
     icon: 'Globe',
   },
   {
+    id: 'everyday',
+    name: 'Everyday Tools',
+    description: 'Stopwatch, timer, dice roller, coin flip, random number generator, BMI, tip, and fuel cost calculators.',
+    icon: 'Clock',
+  },
+  {
     id: 'other',
     name: 'Other Tools',
     description: 'Subtitle converters, YouTube thumbnail downloader, and other miscellaneous tools.',
