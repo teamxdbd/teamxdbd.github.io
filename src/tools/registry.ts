@@ -30,9 +30,9 @@ import { WordPressPasswordGenerator, HTAccessRedirectGenerator, WebsiteSEOScoreC
 // Other tools
 import { SRTToVTT, VTTToSRT, YouTubeThumbnailDownloader } from '@/tools/OtherTools';
 import { BDNumberLookup } from '@/tools/NumberLookupTools';
-import { Stopwatch, CountdownTimer, PomodoroTimer, DiceRoller, CoinFlip, RandomNumberGenerator, BMICalculator, TipCalculator, CompoundInterestCalculator, FuelCostCalculator, DaysBetweenDates, ReadingTimeEstimator } from '@/tools/EverydayTools';
 import { RemoveDuplicateLines, FindAndReplace, ReverseText, TextToSpeech, TextCompare } from '@/tools/MoreTextTools';
 import { MarkdownToHTML, BoxShadowGenerator, MetaTagGenerator, RobotsTxtGenerator, RegexTester, SHA256Generator, HTTPStatusCodeReference, JWTDecoder } from '@/tools/AdvancedDevTools';
+import { PasswordStrengthAnalyzer, HashIdentifier, SubnetCalculator, MACVendorLookup, SecurityHeadersChecker, PortReference, WordlistGenerator, CaesarCipher, VigenereCipher, ROT13Converter, Base32Encode, Base32Decode, XSSPayloadReference, SQLiPayloadReference, HTTPHeaderInjector } from '@/tools/SecurityTools';
 
 const componentMap: Record<string, React.ComponentType> = {
   // Text
@@ -209,19 +209,22 @@ const componentMap: Record<string, React.ComponentType> = {
   'vtt-to-srt': VTTToSRT,
   'youtube-thumbnail-downloader': YouTubeThumbnailDownloader,
   'bd-number-lookup': BDNumberLookup,
-  // Everyday
-  'stopwatch': Stopwatch,
-  'countdown-timer': CountdownTimer,
-  'pomodoro-timer': PomodoroTimer,
-  'dice-roller': DiceRoller,
-  'coin-flip': CoinFlip,
-  'random-number-generator': RandomNumberGenerator,
-  'bmi-calculator': BMICalculator,
-  'tip-calculator': TipCalculator,
-  'compound-interest-calculator': CompoundInterestCalculator,
-  'fuel-cost-calculator': FuelCostCalculator,
-  'days-between-dates': DaysBetweenDates,
-  'reading-time-estimator': ReadingTimeEstimator,
+  // Security & Hacking
+  'password-strength-analyzer': PasswordStrengthAnalyzer,
+  'hash-identifier': HashIdentifier,
+  'subnet-calculator': SubnetCalculator,
+  'mac-vendor-lookup': MACVendorLookup,
+  'security-headers-checker': SecurityHeadersChecker,
+  'port-reference': PortReference,
+  'wordlist-generator': WordlistGenerator,
+  'caesar-cipher': CaesarCipher,
+  'vigenere-cipher': VigenereCipher,
+  'rot13-converter': ROT13Converter,
+  'base32-encode': Base32Encode,
+  'base32-decode': Base32Decode,
+  'xss-payload-reference': XSSPayloadReference,
+  'sqli-payload-reference': SQLiPayloadReference,
+  'http-header-injector': HTTPHeaderInjector,
   // Additional Text
   'remove-duplicate-lines': RemoveDuplicateLines,
   'find-and-replace': FindAndReplace,

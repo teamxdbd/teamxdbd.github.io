@@ -62,10 +62,10 @@ export const categories: Category[] = [
     icon: 'Globe',
   },
   {
-    id: 'everyday',
-    name: 'Everyday Tools',
-    description: 'Stopwatch, timer, dice roller, coin flip, random number generator, BMI, tip, and fuel cost calculators.',
-    icon: 'Clock',
+    id: 'security',
+    name: 'Security & Hacking Tools',
+    description: 'Password strength analyzer, hash identifier, subnet calculator, MAC vendor lookup, security headers checker, and more tools for ethical hackers and security researchers.',
+    icon: 'ShieldCheck',
   },
   {
     id: 'other',

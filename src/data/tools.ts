@@ -184,19 +184,23 @@ export const tools: Tool[] = [
   { slug: 'youtube-thumbnail-downloader', name: 'YouTube Thumbnail Downloader', description: 'Download thumbnails from any YouTube video in multiple resolutions.', category: 'other', icon: 'Youtube' },
   { slug: 'bd-number-lookup', name: 'BD Number Lookup', description: 'Identify the mobile operator for any Bangladeshi phone number by its prefix.', category: 'other', icon: 'Phone' },
 
-  // Everyday Tools
-  { slug: 'stopwatch', name: 'Stopwatch', description: 'A precision stopwatch with millisecond accuracy for timing activities.', category: 'everyday', icon: 'Timer' },
-  { slug: 'countdown-timer', name: 'Countdown Timer', description: 'Set a countdown timer with custom minutes and seconds.', category: 'everyday', icon: 'Clock' },
-  { slug: 'pomodoro-timer', name: 'Pomodoro Timer', description: 'Boost productivity with work/break cycles using the Pomodoro Technique.', category: 'everyday', icon: 'Timer' },
-  { slug: 'dice-roller', name: 'Dice Roller', description: 'Roll virtual dice with customizable count and sides (D4 to D100).', category: 'everyday', icon: 'Dice5' },
-  { slug: 'coin-flip', name: 'Coin Flip', description: 'Flip a virtual coin for quick heads or tails decisions.', category: 'everyday', icon: 'Coins' },
-  { slug: 'random-number-generator', name: 'Random Number Generator', description: 'Generate random numbers within a custom range.', category: 'everyday', icon: 'Hash' },
-  { slug: 'bmi-calculator', name: 'BMI Calculator', description: 'Calculate Body Mass Index and see your weight category.', category: 'everyday', icon: 'HeartPulse' },
-  { slug: 'tip-calculator', name: 'Tip Calculator', description: 'Calculate tips and split bills among multiple people.', category: 'everyday', icon: 'Calculator' },
-  { slug: 'compound-interest-calculator', name: 'Compound Interest Calculator', description: 'Calculate compound interest on investments with custom rates.', category: 'everyday', icon: 'Calculator' },
-  { slug: 'fuel-cost-calculator', name: 'Fuel Cost Calculator', description: 'Estimate fuel needed and total cost for a trip.', category: 'everyday', icon: 'Fuel' },
-  { slug: 'days-between-dates', name: 'Days Between Dates', description: 'Calculate the number of days, weeks, months, and years between two dates.', category: 'everyday', icon: 'CalendarDays' },
-  { slug: 'reading-time-estimator', name: 'Reading Time Estimator', description: 'Estimate reading time for any text based on words per minute.', category: 'everyday', icon: 'BookOpen' },
+
+  // Security & Hacking Tools
+  { slug: 'password-strength-analyzer', name: 'Password Strength Analyzer', description: 'Analyze password strength, entropy, crack time, and identify weaknesses.', category: 'security', icon: 'Lock' },
+  { slug: 'hash-identifier', name: 'Hash Identifier', description: 'Identify hash types by length and format (MD5, SHA-256, bcrypt, etc).', category: 'security', icon: 'Fingerprint' },
+  { slug: 'subnet-calculator', name: 'Subnet Calculator', description: 'Calculate network, broadcast, host range, and wildcard mask from CIDR notation.', category: 'security', icon: 'Network' },
+  { slug: 'mac-vendor-lookup', name: 'MAC Vendor Lookup', description: 'Look up the manufacturer of a network device by its MAC address.', category: 'security', icon: 'Cpu' },
+  { slug: 'security-headers-checker', name: 'Security Headers Checker', description: 'Check HTTP security headers on any website (CSP, HSTS, X-Frame-Options).', category: 'security', icon: 'ShieldCheck' },
+  { slug: 'port-reference', name: 'Port Reference', description: 'Searchable reference for common TCP/UDP ports and their services.', category: 'security', icon: 'Plug' },
+  { slug: 'wordlist-generator', name: 'Wordlist Generator', description: 'Generate custom wordlists for password testing with patterns and mutations.', category: 'security', icon: 'List' },
+  { slug: 'caesar-cipher', name: 'Caesar Cipher', description: 'Encrypt and decrypt text using the Caesar cipher with custom shift.', category: 'security', icon: 'Lock' },
+  { slug: 'vigenere-cipher', name: 'Vigenere Cipher', description: 'Encrypt and decrypt text using the Vigenere cipher with a keyword.', category: 'security', icon: 'KeySquare' },
+  { slug: 'rot13-converter', name: 'ROT13 Converter', description: 'Encode and decode text using the ROT13 substitution cipher.', category: 'security', icon: 'Replace' },
+  { slug: 'base32-encode', name: 'Base32 Encoder', description: 'Encode text to Base32 format.', category: 'security', icon: 'Binary' },
+  { slug: 'base32-decode', name: 'Base32 Decoder', description: 'Decode Base32 encoded text back to readable text.', category: 'security', icon: 'Binary' },
+  { slug: 'xss-payload-reference', name: 'XSS Payload Reference', description: 'Searchable reference of common XSS test payloads for security testing.', category: 'security', icon: 'Bug' },
+  { slug: 'sqli-payload-reference', name: 'SQL Injection Payload Reference', description: 'Searchable reference of common SQL injection test payloads.', category: 'security', icon: 'Database' },
+  { slug: 'http-header-injector', name: 'HTTP Header Injector', description: 'Build custom HTTP headers for testing requests and APIs.', category: 'security', icon: 'ArrowDownToLine' },
 
   // Additional Text Tools
   { slug: 'remove-duplicate-lines', name: 'Remove Duplicate Lines', description: 'Remove duplicate lines from text while preserving order.', category: 'text', icon: 'Copy' },
