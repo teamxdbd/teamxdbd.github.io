@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ToolInput, ToolButton, ToolError, CopyButton } from '@/components/ToolUI';
-import { FileCode, Shield, Tag, Bot, Hash, ArrowRight } from 'lucide-react';
+import { Tag, Bot, Hash, ArrowRight } from 'lucide-react';
 
 // === Markdown to HTML ===
 export function MarkdownToHTML() {
@@ -18,14 +18,16 @@ export function MarkdownToHTML() {
     html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
     html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
     html = html.replace(/^---$/gm, '<hr/>');
-    html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-    html = html.replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`);
-    html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/^- (.+)$/gm, '$1');
+    html = html.replace(/^(\d+)\. (.+)$/gm, '$2');
     html = html.split('\n').map((line) => {
-      if (/^<(h[1-6]|ul|ol|li|blockquote|hr|pre)/.test(line.trim())) return line;
+      if (/^<(h[1-6]|blockquote|hr|pre)/.test(line.trim())) return line;
+      if (line.startsWith('')) return `<li>${line.slice(1)}</li>`;
+      if (line.startsWith('')) return `<li>${line.slice(1)}</li>`;
       if (line.trim() === '') return '';
       return `<p>${line}</p>`;
     }).join('\n');
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`);
     return html.trim();
   };
 
@@ -277,8 +279,8 @@ export function RegexTester() {
   const [matches, setMatches] = useState<{ match: string; index: number }[]>([]);
   const [error, setError] = useState('');
 
-  const test = () => {
-    if (!pattern || !testText) { setMatches([]); return; }
+  useEffect(() => {
+    if (!pattern || !testText) { setMatches([]); setError(''); return; }
     try {
       setError('');
       const regex = new RegExp(pattern, flags);
@@ -298,14 +300,22 @@ export function RegexTester() {
       setError((e as Error).message);
       setMatches([]);
     }
-  };
+  }, [pattern, flags, testText]);
 
-  const highlighted = testText && matches.length > 0
-    ? testText.split('').map((char, i) => {
-        const inMatch = matches.some((m) => i >= m.index && i < m.index + m.match.length);
-        return inMatch ? `<mark class="bg-cyan-500/30 text-cyan-200 rounded px-0.5">${char}</mark>` : char;
-      }).join('')
-    : testText;
+  const highlightedSegments = useMemo(() => {
+    if (!testText) return [];
+    if (matches.length === 0) return [{ text: testText, match: false }];
+    const segments: { text: string; match: boolean }[] = [];
+    let lastIdx = 0;
+    const sorted = [...matches].sort((a, b) => a.index - b.index);
+    for (const m of sorted) {
+      if (m.index > lastIdx) segments.push({ text: testText.slice(lastIdx, m.index), match: false });
+      segments.push({ text: m.match, match: true });
+      lastIdx = m.index + m.match.length;
+    }
+    if (lastIdx < testText.length) segments.push({ text: testText.slice(lastIdx), match: false });
+    return segments;
+  }, [testText, matches]);
 
   return (
     <div className="space-y-6">
@@ -314,19 +324,23 @@ export function RegexTester() {
           <label className="block text-sm font-medium text-slate-300 mb-2">Pattern</label>
           <div className="flex items-center gap-2">
             <span className="text-slate-500 font-mono">/</span>
-            <input type="text" value={pattern} onChange={(e) => setPattern(e.target.value)} placeholder="\\d+" onInput={test}
+            <input type="text" value={pattern} onChange={(e) => setPattern(e.target.value)} placeholder="\\d+"
               className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white font-mono focus:outline-none focus:ring-2 focus:ring-cyan-400/40" />
             <span className="text-slate-500 font-mono">/</span>
-            <input type="text" value={flags} onChange={(e) => setFlags(e.target.value)} placeholder="gi" onInput={test}
+            <input type="text" value={flags} onChange={(e) => setFlags(e.target.value)} placeholder="gi"
               className="w-16 rounded-lg bg-slate-900 border border-slate-700 px-3 py-2.5 text-white font-mono text-center focus:outline-none focus:ring-2 focus:ring-cyan-400/40" />
           </div>
         </div>
       </div>
-      <ToolInput label="Test String" value={testText} onChange={(e) => { setTestText(e); test(); }} placeholder="Enter text to test against..." rows={6} mono />
+      <ToolInput label="Test String" value={testText} onChange={setTestText} placeholder="Enter text to test against..." rows={6} mono />
       {error && <ToolError message={error} />}
       <div>
         <label className="block text-sm font-medium text-slate-300 mb-2">Highlighted Result ({matches.length} matches)</label>
-        <div className="rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 font-mono text-sm text-slate-300 whitespace-pre-wrap min-h-24" dangerouslySetInnerHTML={{ __html: highlighted || 'No matches' }} />
+        <div className="rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 font-mono text-sm text-slate-300 whitespace-pre-wrap min-h-24">
+          {highlightedSegments.length === 0 ? <span className="text-slate-500">No matches</span> : highlightedSegments.map((seg, i) =>
+            seg.match ? <mark key={i} className="bg-cyan-500/30 text-cyan-200 rounded px-0.5">{seg.text}</mark> : <span key={i}>{seg.text}</span>
+          )}
+        </div>
       </div>
       {matches.length > 0 && (
         <div>

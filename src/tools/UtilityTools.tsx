@@ -117,9 +117,10 @@ export function ColorConverter() {
   const [r, setR] = useState(0);
   const [g, setG] = useState(188);
   const [b, setB] = useState(212);
-  const [h, setH] = useState(0);
-  const [s, setS] = useState(0);
-  const [l, setL] = useState(0);
+  const initialHsl = rgbToHsl(0, 188, 212);
+  const [h, setH] = useState(initialHsl.h);
+  const [s, setS] = useState(initialHsl.s);
+  const [l, setL] = useState(initialHsl.l);
 
   function hexToRgb(hexStr: string) {
     const m = hexStr.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);

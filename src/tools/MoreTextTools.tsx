@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ToolInput, ToolButton, ToolError, CopyButton } from '@/components/ToolUI';
-import { ArrowRight, ArrowLeftRight, Mic, Search } from 'lucide-react';
+import { ArrowLeftRight, Mic, Search } from 'lucide-react';
 
 // === Remove Duplicate Lines ===
 export function RemoveDuplicateLines() {
@@ -164,15 +164,18 @@ export function TextToSpeech() {
   const [speaking, setSpeaking] = useState(false);
   const [error, setError] = useState('');
 
-  useState(() => {
+  useEffect(() => {
     const loadVoices = () => {
       const v = window.speechSynthesis.getVoices();
-      setVoices(v);
-      if (v.length > 0) setSelectedVoice(v[0].name);
+      if (v.length > 0) {
+        setVoices(v);
+        setSelectedVoice((prev) => prev || v[0].name);
+      }
     };
     loadVoices();
     window.speechSynthesis.onvoiceschanged = loadVoices;
-  });
+    return () => { window.speechSynthesis.onvoiceschanged = null; };
+  }, []);
 
   const speak = () => {
     if (!text.trim()) { setError('Please enter some text to speak.'); return; }

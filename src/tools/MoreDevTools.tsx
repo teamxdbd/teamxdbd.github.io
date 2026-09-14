@@ -1,18 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ToolInput, ToolButton, CopyButton, ToolError } from '@/components/ToolUI';
 
 // === JSON Viewer ===
 export function JSONViewer() {
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
-  let formatted = '';
-  try {
-    const parsed = JSON.parse(input);
-    formatted = JSON.stringify(parsed, null, 2);
-    if (error) setError('');
-  } catch (e) {
-    if (input.trim()) setError((e as Error).message);
-  }
+  const [formatted, setFormatted] = useState('');
+
+  useEffect(() => {
+    if (!input.trim()) { setFormatted(''); setError(''); return; }
+    try {
+      setFormatted(JSON.stringify(JSON.parse(input), null, 2));
+      setError('');
+    } catch (e) {
+      setFormatted('');
+      setError((e as Error).message);
+    }
+  }, [input]);
+
   return (
     <div className="space-y-6">
       <ToolInput label="Raw JSON" value={input} onChange={setInput} placeholder='{"key":"value"}' rows={6} mono />
@@ -27,12 +32,18 @@ export function JSONViewer() {
 export function JSONEditor() {
   const [input, setInput] = useState('{}');
   const [error, setError] = useState('');
-  let formatted = '';
-  try {
-    formatted = JSON.stringify(JSON.parse(input), null, 2);
-  } catch (e) {
-    if (input.trim()) setError((e as Error).message); else setError('');
-  }
+  const [formatted, setFormatted] = useState('');
+
+  useEffect(() => {
+    if (!input.trim()) { setFormatted(''); setError(''); return; }
+    try {
+      setFormatted(JSON.stringify(JSON.parse(input), null, 2));
+      setError('');
+    } catch (e) {
+      setFormatted('');
+      setError((e as Error).message);
+    }
+  }, [input]);
   return (
     <div className="space-y-6">
       <ToolInput label="Edit JSON" value={input} onChange={setInput} rows={10} mono />

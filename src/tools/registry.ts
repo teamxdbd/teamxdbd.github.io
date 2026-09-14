@@ -32,7 +32,9 @@ import { SRTToVTT, VTTToSRT, YouTubeThumbnailDownloader } from '@/tools/OtherToo
 import { BDNumberLookup } from '@/tools/NumberLookupTools';
 import { RemoveDuplicateLines, FindAndReplace, ReverseText, TextToSpeech, TextCompare } from '@/tools/MoreTextTools';
 import { MarkdownToHTML, BoxShadowGenerator, MetaTagGenerator, RobotsTxtGenerator, RegexTester, SHA256Generator, HTTPStatusCodeReference, JWTDecoder } from '@/tools/AdvancedDevTools';
-import { PasswordStrengthAnalyzer, HashIdentifier, SubnetCalculator, MACVendorLookup, SecurityHeadersChecker, PortReference, WordlistGenerator, CaesarCipher, VigenereCipher, ROT13Converter, Base32Encode, Base32Decode, XSSPayloadReference, SQLiPayloadReference, HTTPHeaderInjector } from '@/tools/SecurityTools';
+import { PasswordStrengthAnalyzer, HashIdentifier, SubnetCalculator, MACVendorLookup, SecurityHeadersChecker, PortReference, WordlistGenerator } from '@/tools/SecurityTools';
+import { CaesarCipher, VigenereCipher, ROT13Converter, Base32Encode, Base32Decode } from '@/tools/CipherTools';
+import { XSSPayloadReference, SQLiPayloadReference, HTTPHeaderInjector } from '@/tools/PayloadReferenceTools';
 
 const componentMap: Record<string, React.ComponentType> = {
   // Text

