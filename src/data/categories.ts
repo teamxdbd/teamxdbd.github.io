@@ -63,9 +63,39 @@ export const categories: Category[] = [
   },
   {
     id: 'security',
-    name: 'Security & Hacking Tools',
-    description: 'Password strength analyzer, hash identifier, subnet calculator, MAC vendor lookup, security headers checker, and more tools for ethical hackers and security researchers.',
+    name: 'Security & Ethical Hacking Tools',
+    description: 'DNS lookup, CORS tester, HTTP method checker, SSL checker, password analyzer, hash identifier, subnet calculator, and more tools for ethical hackers and security researchers.',
     icon: 'ShieldCheck',
+  },
+  {
+    id: 'ai',
+    name: 'AI & Productivity Tools',
+    description: 'AI prompt generator, text summarizer, hashtag generator, word frequency analyzer, and Pomodoro timer to boost your productivity.',
+    icon: 'Sparkles',
+  },
+  {
+    id: 'lifestyle',
+    name: 'Lifestyle & Everyday Tools',
+    description: 'Tip calculator, BMI calculator, unit price comparison, decision maker, and other handy everyday tools.',
+    icon: 'Heart',
+  },
+  {
+    id: 'pdf',
+    name: 'PDF Tools',
+    description: 'Extract text from PDF files and convert PDF documents to editable text.',
+    icon: 'FileText',
+  },
+  {
+    id: 'carding',
+    name: 'Carding Tools',
+    description: 'BIN checking, test card generation, and card validation tools for educational purposes.',
+    icon: 'CreditCard',
+  },
+  {
+    id: 'disposable',
+    name: 'Disposable Tools',
+    description: 'Temporary and privacy-friendly tools for quick use. Disposable emails, fake identities, and more.',
+    icon: 'Mail',
   },
   {
     id: 'other',

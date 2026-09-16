@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ToolInput, ToolButton, ToolError } from '@/components/ToolUI';
 import { Activity } from 'lucide-react';
 

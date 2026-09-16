@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { ToolInput, ToolButton, CopyButton, ToolError } from '@/components/ToolUI';
-import { Upload, Download, RotateCw, FlipHorizontal, FlipVertical, ZoomIn, Crop } from 'lucide-react';
+import { ToolButton, ToolError } from '@/components/ToolUI';
+import { Upload, Download, RotateCw, FlipHorizontal, FlipVertical } from 'lucide-react';
 
 function useImageUpload() {
   const [imageSrc, setImageSrc] = useState('');
@@ -37,18 +37,6 @@ function UploadZone({ onFile, fileRef }: { onFile: (f: File) => void; fileRef: R
       </div>
     </>
   );
-}
-
-function downloadCanvas(canvas: HTMLCanvasElement, name: string, type = 'image/png', quality = 1) {
-  canvas.toBlob((blob) => {
-    if (!blob) return;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = name;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, type, quality);
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {

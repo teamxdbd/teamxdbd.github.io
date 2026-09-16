@@ -1,4 +1,4 @@
-import { Wrench, Home as HomeIcon, Github, Mail, AlertTriangle } from 'lucide-react';
+import { Wrench, Send, AlertTriangle, Mail } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 
 interface HeaderProps {
@@ -8,7 +8,7 @@ interface HeaderProps {
 
 export function Header({ onNavigate, onSearchSelect }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-lg border-b border-slate-800">
+    <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-lg border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 h-16">
           <button
@@ -18,7 +18,7 @@ export function Header({ onNavigate, onSearchSelect }: HeaderProps) {
             <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 shadow-lg shadow-cyan-500/30 group-hover:shadow-cyan-500/50 transition-shadow">
               <Wrench className="h-5 w-5 text-white" />
             </div>
-            <span className="text-lg font-bold text-white hidden sm:block">
+            <span className="text-lg font-bold text-white">
               Tool<span className="text-cyan-400">Hub</span>
             </span>
           </button>
@@ -28,12 +28,21 @@ export function Header({ onNavigate, onSearchSelect }: HeaderProps) {
           </div>
 
           <nav className="flex items-center gap-1 shrink-0">
-            <button
-              onClick={() => onNavigate('/')}
+            <a
+              href="https://t.me/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-sm font-medium"
             >
-              <HomeIcon className="h-4 w-4" />
-              <span className="hidden md:block">Home</span>
+              <Send className="h-4 w-4" />
+              <span className="hidden lg:block">Telegram</span>
+            </a>
+            <button
+              onClick={() => onNavigate('/report')}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-sm font-medium"
+            >
+              <AlertTriangle className="h-4 w-4" />
+              <span className="hidden lg:block">Report</span>
             </button>
             <button
               onClick={() => onNavigate('/contact')}
@@ -42,22 +51,6 @@ export function Header({ onNavigate, onSearchSelect }: HeaderProps) {
               <Mail className="h-4 w-4" />
               <span className="hidden lg:block">Contact</span>
             </button>
-            <button
-              onClick={() => onNavigate('/report')}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-sm font-medium"
-            >
-              <AlertTriangle className="h-4 w-4" />
-              <span className="hidden lg:block">Report</span>
-            </button>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-sm font-medium"
-            >
-              <Github className="h-4 w-4" />
-              <span className="hidden md:block">GitHub</span>
-            </a>
           </nav>
         </div>
       </div>

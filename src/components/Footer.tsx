@@ -1,4 +1,4 @@
-import { Wrench, Heart } from 'lucide-react';
+import { Wrench, Send, AlertTriangle, Mail } from 'lucide-react';
 import { categories } from '@/data/categories';
 
 interface FooterProps {
@@ -7,7 +7,7 @@ interface FooterProps {
 
 export function Footer({ onNavigate }: FooterProps) {
   return (
-    <footer className="border-t border-slate-800 bg-slate-900 mt-20">
+    <footer className="border-t border-slate-800 bg-slate-950 mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
@@ -22,10 +22,21 @@ export function Footer({ onNavigate }: FooterProps) {
             <p className="text-sm text-slate-400 leading-relaxed">
               Free online web tools for developers, writers, and everyday users. Fast, private, and no sign-up required.
             </p>
+            <div className="flex items-center gap-3 mt-4">
+              <a href="https://t.me/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-800 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-400 transition-colors">
+                <Send className="h-4 w-4" />
+              </a>
+              <button onClick={() => onNavigate('/contact')} className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-800 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-400 transition-colors">
+                <Mail className="h-4 w-4" />
+              </button>
+              <button onClick={() => onNavigate('/report')} className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-800 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-400 transition-colors">
+                <AlertTriangle className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           <div className="md:col-span-3">
-            <h3 className="text-sm font-semibold text-white mb-4">Categories</h3>
+            <h3 className="text-sm font-semibold text-white mb-4">All Categories</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {categories.map((cat) => (
                 <button
@@ -44,8 +55,8 @@ export function Footer({ onNavigate }: FooterProps) {
           <p className="text-sm text-slate-500">
             © {new Date().getFullYear()} ToolHub. All tools run in your browser.
           </p>
-          <p className="text-sm text-slate-500 flex items-center gap-1.5">
-            Built with <Heart className="h-3.5 w-3.5 text-rose-500 fill-rose-500" /> using React & Tailwind
+          <p className="text-sm text-slate-500">
+            Built with React & Tailwind CSS
           </p>
         </div>
       </div>

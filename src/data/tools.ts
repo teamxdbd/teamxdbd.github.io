@@ -185,7 +185,13 @@ export const tools: Tool[] = [
   { slug: 'bd-number-lookup', name: 'BD Number Lookup', description: 'Identify the mobile operator for any Bangladeshi phone number by its prefix.', category: 'other', icon: 'Phone' },
 
 
-  // Security & Hacking Tools
+  // Security & Ethical Hacking Tools
+  { slug: 'dns-lookup', name: 'DNS Lookup Tool', description: 'Query DNS records (A, AAAA, MX, TXT, NS, CNAME, SOA, PTR) for any domain.', category: 'security', icon: 'Network' },
+  { slug: 'cors-tester', name: 'CORS Tester', description: 'Test Cross-Origin Resource Sharing (CORS) configuration on any website or API.', category: 'security', icon: 'Globe' },
+  { slug: 'http-method-checker', name: 'HTTP Method Checker', description: 'Check which HTTP methods (GET, POST, PUT, DELETE, etc.) are allowed on a website.', category: 'security', icon: 'Activity' },
+  { slug: 'ssl-info-checker', name: 'SSL/TLS Info Checker', description: 'Check if a website has a valid SSL/TLS certificate and HTTPS is properly configured.', category: 'security', icon: 'Lock' },
+  { slug: 'http-header-analyzer', name: 'HTTP Header Analyzer', description: 'Analyze all HTTP response headers from any website for security and performance insights.', category: 'security', icon: 'Search' },
+  { slug: 'security-checklist', name: 'Security Checklist', description: 'A comprehensive security best practices checklist for developers and system administrators.', category: 'security', icon: 'ShieldAlert' },
   { slug: 'password-strength-analyzer', name: 'Password Strength Analyzer', description: 'Analyze password strength, entropy, crack time, and identify weaknesses.', category: 'security', icon: 'Lock' },
   { slug: 'hash-identifier', name: 'Hash Identifier', description: 'Identify hash types by length and format (MD5, SHA-256, bcrypt, etc).', category: 'security', icon: 'Fingerprint' },
   { slug: 'subnet-calculator', name: 'Subnet Calculator', description: 'Calculate network, broadcast, host range, and wildcard mask from CIDR notation.', category: 'security', icon: 'Network' },
@@ -218,4 +224,94 @@ export const tools: Tool[] = [
   { slug: 'sha256-generator', name: 'SHA-256 Hash Generator', description: 'Generate SHA-256 hashes from any text input.', category: 'dev', icon: 'Hash' },
   { slug: 'http-status-code-reference', name: 'HTTP Status Code Reference', description: 'Searchable reference for all common HTTP status codes.', category: 'dev', icon: 'FileCode' },
   { slug: 'jwt-decoder', name: 'JWT Decoder', description: 'Decode JSON Web Tokens to inspect header and payload.', category: 'dev', icon: 'KeyRound' },
+
+  // AI & Productivity Tools
+  { slug: 'ai-prompt-generator', name: 'AI Prompt Generator', description: 'Generate structured AI prompts for content writing, code, analysis, creative, business, and education tasks.', category: 'ai', icon: 'Sparkles' },
+  { slug: 'text-summarizer', name: 'Text Summarizer', description: 'Summarize long text into key sentences, bullet points, or extract the most important keywords.', category: 'ai', icon: 'FileText' },
+  { slug: 'hashtag-generator', name: 'Hashtag Generator', description: 'Generate relevant hashtags from your text or keywords for social media posts.', category: 'ai', icon: 'Hash' },
+  { slug: 'word-frequency-analyzer', name: 'Word Frequency Analyzer', description: 'Analyze word frequency in text and visualize the most common words with a bar chart.', category: 'ai', icon: 'BarChart3' },
+  { slug: 'pomodoro-timer', name: 'Pomodoro Timer', description: 'Boost productivity with a focus and break timer based on the Pomodoro Technique.', category: 'ai', icon: 'Clock' },
+
+  // Lifestyle & Everyday Tools
+  { slug: 'tip-calculator', name: 'Tip Calculator', description: 'Calculate tip amounts and split the bill among any number of people.', category: 'lifestyle', icon: 'Wallet' },
+  { slug: 'bmi-calculator', name: 'BMI Calculator', description: 'Calculate your Body Mass Index (BMI) in metric or imperial units and see your category.', category: 'lifestyle', icon: 'Heart' },
+  { slug: 'unit-price-calculator', name: 'Unit Price Calculator', description: 'Compare product prices by unit to find the best value when shopping.', category: 'lifestyle', icon: 'Scale' },
+  { slug: 'decision-maker', name: 'Random Decision Maker', description: 'Can\'t decide? Let this tool randomly pick from your list of options.', category: 'lifestyle', icon: 'Brain' },
+
+  // PDF Tools
+  { slug: 'pdf-text-extractor', name: 'PDF Text Extractor', description: 'Extract text content from PDF files and download or copy it as plain text.', category: 'pdf', icon: 'FileText' },
+
+  // Carding Tools (Educational)
+  { slug: 'bin-checker', name: 'BIN Checker', description: 'Check BIN details including brand, bank, type, and country from the first 6 digits.', category: 'carding', icon: 'CreditCard' },
+  { slug: 'cc-test-generator', name: 'CC Test Number Generator', description: 'Generate test credit card numbers that pass Luhn validation for testing purposes.', category: 'carding', icon: 'CreditCard' },
+  { slug: 'password-strength-checker', name: 'Password Strength Checker', description: 'Check password strength with entropy analysis and crack time estimation.', category: 'carding', icon: 'Lock' },
+
+  // Disposable Tools
+  { slug: 'temp-mail', name: 'Temp Mail Info', description: 'Generate disposable email addresses and find the best temporary email services.', category: 'disposable', icon: 'Mail' },
+  { slug: 'what-is-my-os', name: 'What Is My OS', description: 'Check your operating system, platform, CPU cores, language, and timezone.', category: 'disposable', icon: 'Monitor' },
+  { slug: 'what-is-my-screen-resolution-enhanced', name: 'Screen Resolution Checker', description: 'Check screen resolution, viewport size, color depth, pixel ratio, and orientation.', category: 'disposable', icon: 'Monitor' },
+  { slug: 'website-source-viewer', name: 'Website Source Code Viewer', description: 'Fetch and view the HTML source code of any webpage.', category: 'disposable', icon: 'Code2' },
+  { slug: 'http-status-reference', name: 'HTTP Status Code Reference', description: 'Searchable reference for all common HTTP status codes with descriptions.', category: 'disposable', icon: 'FileCode' },
+  { slug: 'ssl-certificate-checker', name: 'SSL Certificate Checker', description: 'Check if a website has a valid SSL certificate and HTTPS is properly configured.', category: 'disposable', icon: 'ShieldCheck' },
+  { slug: 'htaccess-redirect-generator-enhanced', name: '.htaccess Redirect Generator', description: 'Generate .htaccess redirect rules for 301 and 302 redirects.', category: 'disposable', icon: 'Redirect' },
+  { slug: 'wordpress-password-generator-enhanced', name: 'WordPress Password Generator', description: 'Generate a strong password suitable for WordPress admin accounts.', category: 'disposable', icon: 'KeyRound' },
+
+  // More PDF Tools
+  { slug: 'pdf-metadata-viewer', name: 'PDF Metadata Viewer', description: 'View metadata from a PDF file including title, author, creation date, producer, and more.', category: 'pdf', icon: 'Info' },
+  { slug: 'pdf-page-counter', name: 'PDF Page Counter', description: 'Quickly count the number of pages in any PDF file by uploading it.', category: 'pdf', icon: 'Hash' },
+  { slug: 'pdf-info', name: 'PDF Information', description: 'Get detailed information about a PDF: version, pages, size, encryption, title, author, and more.', category: 'pdf', icon: 'FileText' },
+  { slug: 'pdf-compressor-info', name: 'PDF Compressor', description: 'Learn how to compress PDF files and find the best free online PDF compression tools.', category: 'pdf', icon: 'Minimize2' },
+  { slug: 'pdf-merger-info', name: 'PDF Merger', description: 'Find the best free online tools to merge multiple PDF files into one document.', category: 'pdf', icon: 'Layers' },
+  { slug: 'pdf-to-image-info', name: 'PDF to Image', description: 'Find the best free online tools to convert PDF pages to JPG or PNG images.', category: 'pdf', icon: 'Image' },
+
+  // Extra Dev Tools
+  { slug: 'yaml-to-json', name: 'YAML to JSON', description: 'Convert YAML configuration files into JSON format.', category: 'dev', icon: 'FileCode' },
+  { slug: 'json-to-yaml', name: 'JSON to YAML', description: 'Convert JSON data into YAML format for configuration files.', category: 'dev', icon: 'FileCode' },
+  { slug: 'morse-code-converter', name: 'Morse Code Converter', description: 'Convert text to Morse code and decode Morse code back to text.', category: 'dev', icon: 'Radio' },
+  { slug: 'og-tag-generator', name: 'Open Graph Tag Generator', description: 'Generate Open Graph and Twitter Card meta tags for social media sharing.', category: 'dev', icon: 'Share2' },
+  { slug: 'sitemap-generator', name: 'Sitemap Generator', description: 'Generate an XML sitemap for your website from a list of URLs.', category: 'dev', icon: 'Map' },
+  { slug: 'gradient-generator', name: 'CSS Gradient Generator', description: 'Generate CSS linear and radial gradients with a live preview and copyable code.', category: 'dev', icon: 'Palette' },
+  { slug: 'json-to-properties', name: 'JSON to Properties', description: 'Convert JSON objects into Java .properties file format with dot notation.', category: 'dev', icon: 'FileCode' },
+  { slug: 'multi-hash-generator', name: 'Multi Hash Generator', description: 'Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes simultaneously from text.', category: 'dev', icon: 'Hash' },
+
+  // Extra Utility Tools
+  { slug: 'favicon-generator-info', name: 'Favicon Generator', description: 'Find the best free online favicon generators for your website.', category: 'utility', icon: 'Star' },
+  { slug: 'url-shortener-info', name: 'URL Shortener', description: 'Find the best free URL shortening services to create compact, shareable links.', category: 'utility', icon: 'Zap' },
+  { slug: 'color-picker-info', name: 'Color Picker Tools', description: 'Find the best color picker tools, palette generators, and color code references.', category: 'utility', icon: 'Palette' },
+  { slug: 'number-to-words-multi', name: 'Number to Words', description: 'Convert any number to its English word representation with proper formatting.', category: 'calculator', icon: 'SpellCheck' },
+
+  // TeamCSB Additional Tools
+  { slug: 'bin-finder', name: 'BIN Finder', description: 'Search BIN database by bank name, country, brand, or BIN number.', category: 'disposable', icon: 'Search' },
+  { slug: 'bin-share', name: 'BIN Share', description: 'Create shareable BIN information text to send to others.', category: 'disposable', icon: 'Share2' },
+  { slug: 'credit-card-generator', name: 'Credit Card Generator', description: 'Generate test credit card numbers with Luhn validation for multiple brands.', category: 'disposable', icon: 'CreditCard' },
+  { slug: 'live-cc-checker-info', name: 'Live CC Checker', description: 'Find card validation and BIN checking tools. For educational purposes only.', category: 'disposable', icon: 'CreditCard' },
+  { slug: 'qr-code-scanner-info', name: 'QR Code Scanner', description: 'Find the best free online QR code scanners using webcam or image upload.', category: 'utility', icon: 'ScanLine' },
+  { slug: 'whois-lookup-info', name: 'WHOIS Lookup', description: 'Find domain registration details with these free WHOIS lookup tools.', category: 'web', icon: 'Globe' },
+  { slug: 'dns-lookup-info', name: 'DNS Lookup', description: 'Look up DNS records and check propagation with these free DNS tools.', category: 'web', icon: 'Server' },
+  { slug: 'reverse-dns-info', name: 'Reverse DNS Lookup', description: 'Find the hostname associated with any IP address using reverse DNS.', category: 'web', icon: 'Server' },
+  { slug: 'ip-geolocation-info', name: 'IP Geolocation', description: 'Find geographic location and ISP details for any IP address.', category: 'web', icon: 'Globe' },
+  { slug: 'email-validator-info', name: 'Email Validator', description: 'Verify if email addresses are valid and deliverable with these free tools.', category: 'web', icon: 'Mail' },
+  { slug: 'pdf-to-word-info', name: 'PDF to Word', description: 'Convert PDF documents to editable Word files with these free online tools.', category: 'pdf', icon: 'FileText' },
+  { slug: 'pdf-to-excel-info', name: 'PDF to Excel', description: 'Extract tables from PDF into Excel spreadsheets with these free tools.', category: 'pdf', icon: 'FileText' },
+  { slug: 'image-compressor-info', name: 'Image Compressor', description: 'Compress JPEG, PNG, and WebP images without losing quality.', category: 'image', icon: 'Image' },
+  { slug: 'video-converter-info', name: 'Video Converter', description: 'Convert videos between MP4, AVI, MKV, MOV and more with these free tools.', category: 'other', icon: 'Video' },
+  { slug: 'audio-converter-info', name: 'Audio Converter', description: 'Convert audio between MP3, WAV, OGG, FLAC and more with these free tools.', category: 'other', icon: 'Music' },
+  { slug: 'password-manager-info', name: 'Password Managers', description: 'Find the best free and premium password managers to secure your accounts.', category: 'utility', icon: 'Lock' },
+  { slug: 'vpn-service-info', name: 'VPN Services', description: 'Find the best VPN services to protect your privacy and access content.', category: 'utility', icon: 'ShieldCheck' },
+  { slug: 'cloud-storage-info', name: 'Cloud Storage', description: 'Find the best free cloud storage services for your files.', category: 'utility', icon: 'Database' },
+  { slug: 'code-formatter-info', name: 'Code Formatters', description: 'Find the best code formatting and beautifying tools for 30+ languages.', category: 'dev', icon: 'Code' },
+  { slug: 'api-testing-info', name: 'API Testing Tools', description: 'Find the best tools for testing REST, GraphQL, and SOAP APIs.', category: 'dev', icon: 'Terminal' },
+  { slug: 'seo-tools-info', name: 'SEO Analysis Tools', description: 'Find the best free and premium SEO analysis and keyword research tools.', category: 'web', icon: 'Activity' },
+  { slug: 'ssl-certificate-info', name: 'SSL Certificate Tools', description: 'Check, verify, and get SSL certificates including free options.', category: 'web', icon: 'ShieldCheck' },
+  { slug: 'website-builder-info', name: 'Website Builders', description: 'Find the best website builders from WordPress to AI-powered tools.', category: 'web', icon: 'Globe' },
+  { slug: 'learning-resources-info', name: 'Learn to Code', description: 'Find free resources to learn programming, web development, and CS.', category: 'dev', icon: 'GraduationCap' },
+  { slug: 'background-remover-info', name: 'Background Remover', description: 'Remove image backgrounds automatically using AI with these free tools.', category: 'image', icon: 'Image' },
+
+  // More AI Tools
+  { slug: 'sentiment-analyzer', name: 'Sentiment Analyzer', description: 'Analyze text sentiment (positive, negative, neutral) and find sentiment words.', category: 'ai', icon: 'Smile' },
+  { slug: 'grammar-checker', name: 'Grammar Checker', description: 'Check text for common grammar and spelling mistakes and get corrected text.', category: 'ai', icon: 'SpellCheck' },
+  { slug: 'content-idea-generator', name: 'Content Idea Generator', description: 'Generate blog post, YouTube, social media, and tutorial ideas from any topic.', category: 'ai', icon: 'Lightbulb' },
+  { slug: 'seo-meta-generator', name: 'SEO Meta Generator', description: 'Generate SEO meta tags with Google search preview and character count validation.', category: 'ai', icon: 'Search' },
+  { slug: 'text-rephraser', name: 'Text Rephraser', description: 'Simplify and rephrase text by replacing wordy phrases with concise alternatives.', category: 'ai', icon: 'RefreshCw' },
+  { slug: 'ai-tools-directory', name: 'AI Tools Directory', description: 'Find the best AI assistants and tools for writing, coding, and productivity.', category: 'ai', icon: 'Sparkles' },
 ];

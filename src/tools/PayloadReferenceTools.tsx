@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { ToolInput, ToolButton, CopyButton, ToolError } from '@/components/ToolUI';
-import { Search, ArrowDownToLine } from 'lucide-react';
+import { ToolInput, ToolButton, CopyButton } from '@/components/ToolUI';
+import { Search } from 'lucide-react';
 
 // === XSS Payload Reference ===
 const XSS_PAYLOADS: { payload: string; type: string; description: string }[] = [

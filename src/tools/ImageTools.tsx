@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ToolInput, ToolButton, CopyButton, ToolError } from '@/components/ToolUI';
+import { ToolInput, CopyButton, ToolError } from '@/components/ToolUI';
 import { Upload, Download } from 'lucide-react';
 
 // === Image to Base64 ===

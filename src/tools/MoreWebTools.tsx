@@ -341,8 +341,8 @@ export function QRCodeDecoder() {
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
   const handleFile = (file: File) => {
-    if (!file.type.startsWith('image/')) { setError('Please select an image file.'); return; }
-    setError('');
+    if (!file.type.startsWith('image/')) { setError('Please select an image file.'); setDecoded(''); return; }
+    setError(''); setDecoded('');
     const reader = new FileReader();
     reader.onload = () => {
       const img = new Image();
