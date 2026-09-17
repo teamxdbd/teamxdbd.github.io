@@ -1,15 +1,16 @@
-name: Create Release
+name: Create Release with APK
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  build-apk:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,14 +22,60 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Install and build
+      - name: Install and build web app
         run: |
           npm ci
           npm run build
 
-      - name: Create release
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools build-tools;34.0.0 platforms;android-34'
+
+      - name: Create gradle wrapper
+        working-directory: android
+        run: gradle wrapper --gradle-version 8.5
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon -x lint
+
+      - name: Rename APK
+        id: apk_info
+        run: |
+          APK_PATH="android/app/build/outputs/apk/debug/app-debug.apk"
+          APK_NAME="TeamXD-Tools-${GITHUB_REF_NAME:-manual}.apk"
+          cp "$APK_PATH" "$APK_NAME"
+          echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: teamxd-tools-apk
+          path: ${{ steps.apk_info.outputs.apk_name }}
+
+      - name: Create GitHub Release with APK
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          files: |
-            dist/**
+          files: ${{ steps.apk_info.outputs.apk_name }}
+          name: TeamXD Tools ${{ github.ref_name }}
+          body: |
+            ## TeamXD Tools — Android APK Release
+
+            ### Installation
+            1. Download the APK file below
+            2. Enable "Install from unknown sources" in your Android settings
+            3. Open the APK file to install
+            4. Launch "TeamXD Tools" from your app drawer
+
+            ### What's New
+            See generated release notes below.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

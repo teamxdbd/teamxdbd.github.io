@@ -66,7 +66,7 @@ export function BINFinder() {
     <div className="space-y-6">
       <div className="flex items-center gap-2 text-xs text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 rounded-lg px-4 py-2.5">
         <Database className="h-4 w-4 shrink-0" />
-        <span>{allEntries.length} approved BIN{allEntries.length !== 1 ? 's' : ''} in the shared directory</span>
+        <span>{allEntries.length} BIN{allEntries.length !== 1 ? 's' : ''} in the shared directory</span>
       </div>
       <ToolInput label="Search by BIN, app name, country, or contributor" value={query} onChange={setQuery} placeholder="e.g. Bangladesh, Netflix, 451890" rows={1} />
       <ToolButton onClick={search} disabled={loading}>
@@ -184,7 +184,7 @@ export function BINShare() {
       {success && (
         <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-300 flex items-center gap-2">
           <ThumbsUp className="h-4 w-4 shrink-0" />
-          <span>Submitted! Your entry will appear in BIN Finder after review.</span>
+          <span>Submitted! Your BIN is now live in the BIN Finder directory.</span>
         </div>
       )}
       {error && <ToolError message={error} />}
@@ -202,13 +202,13 @@ export function BINShare() {
       <ToolButton onClick={submit} disabled={submitting}>
         <span className="flex items-center gap-2">
           {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
-          {submitting ? 'Submitting...' : 'Submit for Review'}
+          {submitting ? 'Submitting...' : 'Share BIN'}
         </span>
       </ToolButton>
 
       <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3">
         <Clock className="h-4 w-4 shrink-0" />
-        <span>Submissions are reviewed before appearing in the BIN Finder directory.</span>
+          <span>Shared BINs appear instantly in the BIN Finder directory — no review needed.</span>
       </div>
     </div>
   );
