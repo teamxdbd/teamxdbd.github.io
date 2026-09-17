@@ -33,15 +33,15 @@ export function CategoryPage({ categoryId, onNavigate }: CategoryPageProps) {
         onNavigate={onNavigate}
       />
       <div className="flex items-center gap-4 mb-8">
-        <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/20">
-          <IconComp className="h-7 w-7 text-cyan-400" />
+        <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/20 shadow-lg shadow-cyan-500/10">
+          <IconComp className="h-8 w-8 text-cyan-400" />
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-white">{category.name}</h1>
-          <p className="text-sm text-slate-400">{category.description}</p>
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold text-white tracking-tight">{category.name}</h1>
+          <p className="text-sm text-slate-400 mt-0.5">{category.description}</p>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
         {catTools.map((tool) => (
           <ToolCard key={tool.slug} tool={tool} onClick={() => onNavigate(`/tool/${tool.slug}`)} />
         ))}

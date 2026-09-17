@@ -1,128 +1,215 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ToolInput, ToolButton, ToolError } from '@/components/ToolUI';
-import { CreditCard, Search, Share2, Mail, Globe, Activity, ShieldCheck, FileText, Image, Download, Code, Database, Terminal, Lock, Server, AlertTriangle, ExternalLink } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { CreditCard, Search, Share2, Mail, Globe, Activity, ShieldCheck, FileText, Image, Download, Code, Database, Terminal, Lock, Server, AlertTriangle, ExternalLink, Loader2, ThumbsUp, Clock } from 'lucide-react';
 
-// === BIN Finder (search BIN database) ===
+interface SharedBinEntry {
+  id: string;
+  alias: string;
+  app_name: string;
+  bin_prefix: string;
+  country: string;
+  testing_notes: string;
+  created_at: string;
+}
+
+// === BIN Finder (search approved shared BIN directory) ===
 export function BINFinder() {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<{ bin: string; brand: string; bank: string; type: string; country: string }[]>([]);
+  const [allEntries, setAllEntries] = useState<SharedBinEntry[]>([]);
+  const [results, setResults] = useState<SharedBinEntry[]>([]);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState<string | null>(null);
 
-  const BIN_DB: Record<string, { brand: string; bank: string; type: string; country: string }> = {
-    '4518': { brand: 'Visa', bank: 'BRAC Bank', type: 'Credit', country: 'Bangladesh' },
-    '5236': { brand: 'Mastercard', bank: 'City Bank', type: 'Credit', country: 'Bangladesh' },
-    '4520': { brand: 'Visa', bank: 'Dutch-Bangla Bank', type: 'Debit', country: 'Bangladesh' },
-    '5262': { brand: 'Mastercard', bank: 'Standard Chartered', type: 'Credit', country: 'Bangladesh' },
-    '4659': { brand: 'Visa', bank: 'JPMorgan Chase', type: 'Credit', country: 'United States' },
-    '4571': { brand: 'Visa', bank: 'Bank of America', type: 'Credit', country: 'United States' },
-    '5424': { brand: 'Mastercard', bank: 'Wells Fargo', type: 'Credit', country: 'United States' },
-    '5556': { brand: 'Mastercard', bank: 'Citibank', type: 'Credit', country: 'United States' },
-    '4143': { brand: 'Visa', bank: 'HSBC', type: 'Credit', country: 'United Kingdom' },
-    '4543': { brand: 'Visa', bank: 'Barclays', type: 'Credit', country: 'United Kingdom' },
-    '4514': { brand: 'Visa', bank: 'HDFC Bank', type: 'Credit', country: 'India' },
-    '5243': { brand: 'Mastercard', bank: 'ICICI Bank', type: 'Credit', country: 'India' },
-    '4559': { brand: 'Visa', bank: 'Commonwealth Bank', type: 'Credit', country: 'Australia' },
-    '4388': { brand: 'Visa', bank: 'DBS Bank', type: 'Credit', country: 'Singapore' },
-    '4517': { brand: 'Visa', bank: 'Royal Bank of Canada', type: 'Credit', country: 'Canada' },
-    '4556': { brand: 'Visa', bank: 'BNP Paribas', type: 'Credit', country: 'France' },
-    '4277': { brand: 'Visa', bank: 'Deutsche Bank', type: 'Credit', country: 'Germany' },
-    '3742': { brand: 'American Express', bank: 'American Express', type: 'Credit', country: 'United States' },
-    '6011': { brand: 'Discover', bank: 'Discover Bank', type: 'Credit', country: 'United States' },
-    '3528': { brand: 'JCB', bank: 'JCB Co.', type: 'Credit', country: 'Japan' },
-  };
+  const loadEntries = useCallback(async () => {
+    setLoading(true);
+    const { data, error: dbError } = await supabase
+      .from('shared_bin_entries')
+      .select('id, alias, app_name, bin_prefix, country, testing_notes, created_at')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false });
+    if (dbError) {
+      setError('Could not load the BIN directory. Please try again.');
+      setAllEntries([]);
+    } else {
+      setError('');
+      setAllEntries((data ?? []) as SharedBinEntry[]);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { void loadEntries(); }, [loadEntries]);
 
   const search = () => {
     const q = query.trim().toLowerCase();
-    if (!q) { setError('Enter a search term (bank name, country, or BIN).'); setResults([]); return; }
-    setError('');
-    const found: typeof results = [];
-    for (const [bin, data] of Object.entries(BIN_DB)) {
-      if (bin.includes(q) || data.bank.toLowerCase().includes(q) || data.country.toLowerCase().includes(q) || data.brand.toLowerCase().includes(q)) {
-        found.push({ bin, ...data });
-      }
-    }
-    if (found.length === 0) { setError('No BINs found matching your query.'); setResults([]); return; }
+    if (!q) { setResults(allEntries); return; }
+    const found = allEntries.filter((e) =>
+      e.bin_prefix.includes(q) ||
+      e.app_name.toLowerCase().includes(q) ||
+      e.country.toLowerCase().includes(q) ||
+      e.alias.toLowerCase().includes(q) ||
+      e.testing_notes.toLowerCase().includes(q)
+    );
     setResults(found);
+  };
+
+  useEffect(() => { setResults(allEntries); }, [allEntries]);
+
+  const copyBin = (bin: string) => {
+    navigator.clipboard.writeText(bin);
+    setCopied(bin);
+    setTimeout(() => setCopied(null), 2000);
   };
 
   return (
     <div className="space-y-6">
-      <ToolInput label="Search by BIN, bank, country, or brand" value={query} onChange={setQuery} placeholder="e.g. Bangladesh, Visa, 4518" rows={1} />
-      <ToolButton onClick={search} disabled={!query.trim()}>
-        <span className="flex items-center gap-2"><Search className="h-4 w-4" /> Search BINs</span>
+      <div className="flex items-center gap-2 text-xs text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 rounded-lg px-4 py-2.5">
+        <Database className="h-4 w-4 shrink-0" />
+        <span>{allEntries.length} approved BIN{allEntries.length !== 1 ? 's' : ''} in the shared directory</span>
+      </div>
+      <ToolInput label="Search by BIN, app name, country, or contributor" value={query} onChange={setQuery} placeholder="e.g. Bangladesh, Netflix, 451890" rows={1} />
+      <ToolButton onClick={search} disabled={loading}>
+        <span className="flex items-center gap-2">{loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Search BINs</span>
       </ToolButton>
       {error && <ToolError message={error} />}
+      {!loading && results.length === 0 && !error && (
+        <div className="text-sm text-slate-400 text-center py-8">
+          No BINs found. Be the first to share one using the BIN Share tool!
+        </div>
+      )}
       {results.length > 0 && (
-        <div className="space-y-2">
-          <div className="text-sm text-slate-400">{results.length} result(s) found</div>
+        <div className="space-y-3">
+          <div className="text-sm text-slate-400">{results.length} result{results.length !== 1 ? 's' : ''} found</div>
           {results.map((r) => (
-            <div key={r.bin} className="flex items-center gap-3 rounded-lg bg-slate-900 border border-slate-700 px-4 py-3">
-              <CreditCard className="h-5 w-5 text-cyan-400" />
-              <div className="flex-1">
-                <div className="font-mono text-sm text-cyan-300">{r.bin}xxx</div>
-                <div className="text-xs text-slate-400">{r.brand} - {r.bank} - {r.type} - {r.country}</div>
+            <div key={r.id} className="rounded-xl bg-slate-900 border border-slate-700 px-4 py-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <CreditCard className="h-5 w-5 text-cyan-400 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-mono text-sm text-cyan-300">{r.bin_prefix}</div>
+                  <div className="text-xs text-slate-400 truncate">Shared by {r.alias}</div>
+                </div>
+                <button
+                  onClick={() => copyBin(r.bin_prefix)}
+                  className="text-xs text-slate-400 hover:text-cyan-400 transition-colors shrink-0"
+                >
+                  {copied === r.bin_prefix ? 'Copied!' : 'Copy'}
+                </button>
               </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-lg bg-slate-800/50 border border-slate-700/50 px-3 py-2">
+                  <div className="text-xs text-slate-500">App / Site</div>
+                  <div className="text-sm text-slate-200 truncate">{r.app_name}</div>
+                </div>
+                <div className="rounded-lg bg-slate-800/50 border border-slate-700/50 px-3 py-2">
+                  <div className="text-xs text-slate-500">Country</div>
+                  <div className="text-sm text-slate-200 truncate">{r.country}</div>
+                </div>
+              </div>
+              {r.testing_notes && (
+                <div className="text-xs text-slate-400 bg-slate-800/30 rounded-lg px-3 py-2">
+                  {r.testing_notes}
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
       <div className="text-xs text-slate-500 bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3">
-        For educational and testing purposes only. The BIN database is limited and may not cover all ranges.
+        For educational and testing purposes only. Only six-digit BIN prefixes are shared. Full card numbers and operational instructions are rejected.
       </div>
     </div>
   );
 }
 
-// === BIN Share (share BIN info) ===
+// === BIN Share (submit a BIN to the shared directory) ===
 export function BINShare() {
+  const [alias, setAlias] = useState('');
+  const [appName, setAppName] = useState('');
   const [bin, setBin] = useState('');
-  const [brand, setBrand] = useState('');
-  const [bank, setBank] = useState('');
   const [country, setCountry] = useState('');
-  const [shareText, setShareText] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [notes, setNotes] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
 
-  const generate = () => {
-    if (!bin.trim()) return;
-    const lines = [
-      `BIN: ${bin}`,
-      brand ? `Brand: ${brand}` : '',
-      bank ? `Bank: ${bank}` : '',
-      country ? `Country: ${country}` : '',
-      '',
-      'Shared via TeamCSB Tools',
-    ].filter((l) => l !== '' || l === '');
-    setShareText(lines.join('\n'));
-    setCopied(false);
+  const handleBinChange = (val: string) => {
+    setBin(val.replace(/\D/g, '').slice(0, 6));
+  };
+
+  const submit = async () => {
+    setError('');
+    if (!alias.trim() || !appName.trim() || !bin.trim() || !country.trim() || !notes.trim()) {
+      setError('Please fill in all fields.');
+      return;
+    }
+    if (bin.length !== 6) {
+      setError('BIN must be exactly 6 digits.');
+      return;
+    }
+    setSubmitting(true);
+    setSuccess(false);
+    const { data, error: rpcError } = await supabase.rpc('submit_shared_bin', {
+      p_alias: alias.trim(),
+      p_app_name: appName.trim(),
+      p_bin_prefix: bin,
+      p_country: country.trim(),
+      p_testing_notes: notes.trim(),
+    });
+    setSubmitting(false);
+    if (rpcError || !data) {
+      setError('Could not submit. Please check your entry and try again.');
+      return;
+    }
+    setSuccess(true);
+    setAlias('');
+    setAppName('');
+    setBin('');
+    setCountry('');
+    setNotes('');
   };
 
   return (
     <div className="space-y-6">
-      <ToolInput label="BIN (6 digits)" value={bin} onChange={setBin} placeholder="451890" rows={1} />
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <ToolInput label="Brand" value={brand} onChange={setBrand} placeholder="Visa" rows={1} />
-        <ToolInput label="Bank" value={bank} onChange={setBank} placeholder="BRAC Bank" rows={1} />
-        <ToolInput label="Country" value={country} onChange={setCountry} placeholder="Bangladesh" rows={1} />
+      <div className="rounded-xl bg-cyan-500/10 border border-cyan-500/20 p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Share2 className="h-4 w-4 text-cyan-400" />
+          <h3 className="text-sm font-bold text-white">Share a BIN Prefix</h3>
+        </div>
+        <p className="text-xs text-slate-400">
+          Submit a six-digit BIN prefix for the community directory. Only BIN prefixes are accepted — full card numbers, expiry dates, security codes, VPN/cookie instructions, and checkout workarounds will be rejected.
+        </p>
       </div>
-      <ToolButton onClick={generate} disabled={!bin.trim()}>
-        <span className="flex items-center gap-2"><Share2 className="h-4 w-4" /> Generate Share Text</span>
-      </ToolButton>
-      {shareText && (
-        <div className="space-y-3">
-          <textarea
-            value={shareText}
-            readOnly
-            className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-white text-sm font-mono resize-y focus:outline-none"
-            rows={7}
-          />
-          <button
-            onClick={() => { navigator.clipboard.writeText(shareText); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-200 hover:bg-slate-600'}`}
-          >
-            {copied ? 'Copied!' : 'Copy Share Text'}
-          </button>
+
+      {success && (
+        <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm text-emerald-300 flex items-center gap-2">
+          <ThumbsUp className="h-4 w-4 shrink-0" />
+          <span>Submitted! Your entry will appear in BIN Finder after review.</span>
         </div>
       )}
+      {error && <ToolError message={error} />}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <ToolInput label="Your Alias" value={alias} onChange={setAlias} placeholder="e.g. TesterBD" rows={1} />
+        <ToolInput label="App / Website Name" value={appName} onChange={setAppName} placeholder="e.g. Netflix, Spotify" rows={1} />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <ToolInput label="BIN (6 digits)" value={bin} onChange={handleBinChange} placeholder="451890" rows={1} mono />
+        <ToolInput label="Country" value={country} onChange={setCountry} placeholder="e.g. Bangladesh" rows={1} />
+      </div>
+      <ToolInput label="Testing Notes" value={notes} onChange={setNotes} placeholder="e.g. Works with Stripe test mode for sandbox checkout testing." rows={3} />
+
+      <ToolButton onClick={submit} disabled={submitting}>
+        <span className="flex items-center gap-2">
+          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
+          {submitting ? 'Submitting...' : 'Submit for Review'}
+        </span>
+      </ToolButton>
+
+      <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3">
+        <Clock className="h-4 w-4 shrink-0" />
+        <span>Submissions are reviewed before appearing in the BIN Finder directory.</span>
+      </div>
     </div>
   );
 }

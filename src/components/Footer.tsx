@@ -1,4 +1,4 @@
-import { Wrench, Send, AlertTriangle, Mail } from 'lucide-react';
+import { Zap, Send, AlertTriangle, Mail } from 'lucide-react';
 import { categories } from '@/data/categories';
 
 interface FooterProps {
@@ -13,10 +13,10 @@ export function Footer({ onNavigate }: FooterProps) {
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600">
-                <Wrench className="h-4 w-4 text-white" />
+                <Zap className="h-4 w-4 text-white" />
               </div>
               <span className="text-lg font-bold text-white">
-                Tool<span className="text-cyan-400">Hub</span>
+                Team<span className="text-cyan-400">XD</span>
               </span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
@@ -53,7 +53,7 @@ export function Footer({ onNavigate }: FooterProps) {
 
         <div className="mt-10 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} ToolHub. All tools run in your browser.
+            © {new Date().getFullYear()} TeamXD. All tools run in your browser.
           </p>
           <p className="text-sm text-slate-500">
             Built with React & Tailwind CSS

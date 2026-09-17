@@ -13,9 +13,9 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
   return (
     <button
       onClick={onClick}
-      className="group flex flex-col items-center text-center p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 hover:bg-slate-800/80 transition-all duration-200"
+      className="group relative flex flex-col items-center text-center p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 hover:bg-slate-800/60 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/5"
     >
-      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-slate-800 group-hover:bg-cyan-500/10 transition-colors duration-200 mb-3">
+      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-slate-800 group-hover:bg-cyan-500/10 transition-all duration-200 mb-3 group-hover:scale-105">
         <IconComp className="h-6 w-6 text-slate-400 group-hover:text-cyan-400 transition-colors duration-200" />
       </div>
       <h3 className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors line-clamp-2 leading-snug">
@@ -61,9 +61,9 @@ export function BackButton({ onClick, label = 'Back' }: BackButtonProps) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors mb-6"
+      className="group flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors mb-6"
     >
-      <ArrowLeft className="h-4 w-4" />
+      <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
       {label}
     </button>
   );

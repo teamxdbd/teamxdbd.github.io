@@ -118,11 +118,11 @@ export function BINChecker() {
               </div>
             ))}
           </div>
-          <div className="text-xs text-slate-500 pt-2">
-            For educational and testing purposes only. Data may not be accurate for all BIN ranges.
-          </div>
         </div>
       )}
+      <div className="text-xs text-slate-500 bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3">
+        For educational and testing purposes only. The BIN database is limited and may not cover all ranges.
+      </div>
     </div>
   );
 }
@@ -132,12 +132,15 @@ export function CCTestGenerator() {
   const [count, setCount] = useState('5');
   const [brand, setBrand] = useState('visa');
   const [results, setResults] = useState<string[]>([]);
+  const [copied, setCopied] = useState<number | null>(null);
 
   const brands = [
     { id: 'visa', name: 'Visa', prefix: '4', length: 16 },
     { id: 'mastercard', name: 'Mastercard', prefix: '5', length: 16 },
     { id: 'amex', name: 'Amex', prefix: '34', length: 15 },
     { id: 'discover', name: 'Discover', prefix: '6011', length: 16 },
+    { id: 'jcb', name: 'JCB', prefix: '35', length: 16 },
+    { id: 'diners', name: 'Diners Club', prefix: '36', length: 14 },
   ];
 
   const luhnCheckDigit = (partial: string): string => {
@@ -166,6 +169,7 @@ export function CCTestGenerator() {
       cards.push(card);
     }
     setResults(cards);
+    setCopied(null);
   };
 
   return (
@@ -196,8 +200,11 @@ export function CCTestGenerator() {
               <div key={i} className="flex items-center gap-3 rounded-lg bg-slate-900 border border-slate-700 px-4 py-3">
                 <CreditCard className="h-4 w-4 text-slate-500" />
                 <span className="font-mono text-sm text-cyan-300">{card.replace(/(.{4})/g, '$1 ')}</span>
-                <button onClick={() => navigator.clipboard.writeText(card)} className="ml-auto text-xs text-slate-400 hover:text-cyan-400 transition-colors">
-                  Copy
+                <button
+                  onClick={() => { navigator.clipboard.writeText(card); setCopied(i); setTimeout(() => setCopied(null), 2000); }}
+                  className="ml-auto text-xs text-slate-400 hover:text-cyan-400 transition-colors"
+                >
+                  {copied === i ? 'Copied!' : 'Copy'}
                 </button>
               </div>
             ))}
@@ -447,6 +454,8 @@ export function WebsiteSourceViewer() {
 // === Password Strength Checker (Quick) ===
 export function PasswordStrengthChecker() {
   const [password, setPassword] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [show, setShow] = useState(false);
 
   const checks = [
     { label: 'Length 12+', pass: password.length >= 12 },
@@ -459,9 +468,21 @@ export function PasswordStrengthChecker() {
   const strength = score === 0 ? 'None' : score <= 2 ? 'Weak' : score <= 3 ? 'Fair' : score === 4 ? 'Good' : 'Strong';
   const colors: Record<string, string> = { None: '#64748b', Weak: '#f87171', Fair: '#fbbf24', Good: '#60a5fa', Strong: '#34d399' };
 
+  const charsetSize = (/[a-z]/.test(password) ? 26 : 0) + (/[A-Z]/.test(password) ? 26 : 0) + (/\d/.test(password) ? 10 : 0) + (/[^A-Za-z0-9]/.test(password) ? 32 : 0);
+  const entropy = password.length > 0 && charsetSize > 0 ? Math.round(password.length * Math.log2(charsetSize)) : 0;
+  const crackTime = entropy === 0 ? 'Instant' : entropy < 28 ? 'Seconds' : entropy < 36 ? 'Minutes' : entropy < 60 ? 'Hours' : entropy < 128 ? 'Years' : 'Centuries';
+
   return (
     <div className="space-y-6">
-      <ToolInput label="Password to Check" value={password} onChange={setPassword} placeholder="Enter a password..." rows={1} />
+      <div className="relative">
+        <ToolInput label="Password to Check" value={password} onChange={setPassword} placeholder="Enter a password..." rows={1} mono />
+        <button
+          onClick={() => setShow(!show)}
+          className="absolute right-3 top-9 text-xs text-slate-400 hover:text-cyan-400 transition-colors"
+        >
+          {show ? 'Hide' : 'Show'}
+        </button>
+      </div>
       {password && (
         <div className="space-y-4">
           <div className="rounded-xl p-4" style={{ backgroundColor: colors[strength] + '15', border: `1px solid ${colors[strength]}40` }}>
@@ -471,6 +492,10 @@ export function PasswordStrengthChecker() {
             </div>
             <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
               <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(score / 5) * 100}%`, backgroundColor: colors[strength] }} />
+            </div>
+            <div className="flex items-center justify-between mt-3 text-xs text-slate-400">
+              <span>Entropy: <span className="font-mono text-cyan-300">{entropy} bits</span></span>
+              <span>Crack time: <span className="font-mono text-cyan-300">{crackTime}</span></span>
             </div>
           </div>
           <div className="space-y-2">
@@ -483,6 +508,12 @@ export function PasswordStrengthChecker() {
               </div>
             ))}
           </div>
+          <button
+            onClick={() => { navigator.clipboard.writeText(password); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-200 hover:bg-slate-600'}`}
+          >
+            {copied ? 'Copied!' : 'Copy Password'}
+          </button>
         </div>
       )}
     </div>

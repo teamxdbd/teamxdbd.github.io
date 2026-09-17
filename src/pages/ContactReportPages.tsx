@@ -134,7 +134,7 @@ export function ReportPage({ onNavigate }: ContactPageProps) {
           <div className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">Link / Tool URL</label>
-              <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://toolhub.com/tool/..." className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/40" />
+              <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://teamxd.com/tool/..." className="w-full rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/40" />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">Issue Type</label>

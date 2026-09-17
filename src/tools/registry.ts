@@ -272,7 +272,7 @@ const componentMap: Record<string, React.ComponentType> = {
   'decision-maker': DecisionMaker,
   // PDF
   'pdf-text-extractor': PDFTextExtractor,
-  // TeamCSB Tools
+  // TeamXD Tools
   'bin-checker': BINChecker,
   'cc-test-generator': CCTestGenerator,
   'temp-mail': TempMailInfo,
@@ -304,7 +304,7 @@ const componentMap: Record<string, React.ComponentType> = {
   'multi-hash-generator': MultiHashGenerator,
   'color-picker-info': ColorPickerInfo,
   'json-to-properties': JSONToProperties,
-  // More TeamCSB Tools
+  // More TeamXD Tools
   'bin-finder': BINFinder,
   'bin-share': BINShare,
   'credit-card-generator': CreditCardGenerator,

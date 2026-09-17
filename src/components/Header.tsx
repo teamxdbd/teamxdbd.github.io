@@ -1,4 +1,4 @@
-import { Wrench, Send, AlertTriangle, Mail } from 'lucide-react';
+import { Zap, Send, AlertTriangle, Mail } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 
 interface HeaderProps {
@@ -16,10 +16,10 @@ export function Header({ onNavigate, onSearchSelect }: HeaderProps) {
             className="flex items-center gap-2 shrink-0 group"
           >
             <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 shadow-lg shadow-cyan-500/30 group-hover:shadow-cyan-500/50 transition-shadow">
-              <Wrench className="h-5 w-5 text-white" />
+              <Zap className="h-5 w-5 text-white" />
             </div>
             <span className="text-lg font-bold text-white">
-              Tool<span className="text-cyan-400">Hub</span>
+              Team<span className="text-cyan-400">XD</span>
             </span>
           </button>
 

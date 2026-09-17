@@ -9,47 +9,59 @@ interface HomePageProps {
 export function HomePage({ onNavigate }: HomePageProps) {
   return (
     <div className="bg-slate-950">
-      {/* Hero Section - TeamCSB style */}
+      {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-slate-800">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950" />
         <div
-          className="absolute inset-0 opacity-40"
+          className="absolute inset-0 opacity-50"
           style={{
             backgroundImage:
-              'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(6, 182, 212, 0.12), transparent), radial-gradient(ellipse 60% 40% at 80% 10%, rgba(37, 99, 235, 0.08), transparent)',
+              'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(6, 182, 212, 0.15), transparent), radial-gradient(ellipse 60% 40% at 80% 10%, rgba(37, 99, 235, 0.10), transparent), radial-gradient(ellipse 50% 30% at 20% 20%, rgba(6, 182, 212, 0.06), transparent)',
           }}
         />
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight">
+        {/* Grid pattern overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold mb-6">
+            <Icons.Sparkles className="h-3.5 w-3.5" />
+            Powered by TeamXD
+          </div>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.1]">
             Free Online Web Tools
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-5 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
             {tools.length}+ free tools for developers, writers, security researchers, and everyday tasks. Fast, private, no sign-up required. Everything runs right in your browser.
           </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={() => onNavigate('/category/dev')}
-              className="px-5 py-2.5 rounded-lg bg-cyan-500 text-white text-sm font-semibold hover:bg-cyan-400 transition-colors"
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/20 transition-all"
             >
               Developer Tools
             </button>
             <button
               onClick={() => onNavigate('/category/text')}
-              className="px-5 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm font-semibold hover:bg-slate-700 transition-colors"
+              className="px-6 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-sm font-semibold hover:bg-slate-700 transition-all"
             >
               Text Tools
             </button>
             <button
-              onClick={() => onNavigate('/category/pdf')}
-              className="px-5 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm font-semibold hover:bg-slate-700 transition-colors"
+              onClick={() => onNavigate('/category/carding')}
+              className="px-6 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-sm font-semibold hover:bg-slate-700 transition-all"
             >
-              PDF Tools
+              Card Testing Tools
             </button>
           </div>
         </div>
       </section>
 
-      {/* Category Sections - TeamCSB style */}
+      {/* Category Sections */}
       {categories.map((cat) => {
         const catTools = tools.filter((t) => t.category === cat.id);
         if (catTools.length === 0) return null;
@@ -77,7 +89,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 </button>
               </div>
 
-              {/* Tool Grid - TeamCSB card style */}
+              {/* Tool Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
                 {catTools.slice(0, 12).map((tool) => {
                   const ToolIcon = (Icons[tool.icon as keyof typeof Icons] ?? Icons.Wrench) as Icons.LucideIcon;
@@ -85,9 +97,9 @@ export function HomePage({ onNavigate }: HomePageProps) {
                     <button
                       key={tool.slug}
                       onClick={() => onNavigate(`/tool/${tool.slug}`)}
-                      className="group flex flex-col items-center text-center p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 hover:bg-slate-800/80 transition-all duration-200"
+                      className="group relative flex flex-col items-center text-center p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 hover:bg-slate-800/60 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/5"
                     >
-                      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-slate-800 group-hover:bg-cyan-500/10 transition-colors duration-200 mb-3">
+                      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-slate-800 group-hover:bg-cyan-500/10 transition-all duration-200 mb-3 group-hover:scale-105">
                         <ToolIcon className="h-6 w-6 text-slate-400 group-hover:text-cyan-400 transition-colors duration-200" />
                       </div>
                       <h3 className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors line-clamp-2 leading-snug">
@@ -117,8 +129,9 @@ export function HomePage({ onNavigate }: HomePageProps) {
 
       {/* Stats Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border border-cyan-500/20 p-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border border-cyan-500/20 p-8">
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          <div className="relative grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
             <div>
               <div className="text-3xl font-bold text-cyan-300">{tools.length}+</div>
               <div className="text-sm text-slate-400 mt-1">Total Tools</div>
