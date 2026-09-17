@@ -1,50 +1,25 @@
-# ToolHub - Free Online Web Tools
+# ⚡ teamxdbd.bolt.host
 
-A modern collection of 60+ free online web tools for developers, writers, and everyday tasks. All tools run in your browser — fast, private, and no sign-up required.
+> **Next-Gen Web Portal for Team XD / XD4RK-W4RR10R**  
+> High-speed, modern web gateway for open-source utilities, Termux tools & developer docs — migrated to Bolt Host.
 
-## Features
+---
 
-- **Text Tools**: Word counter, case converter, Lorem Ipsum generator, text sorter, and more
-- **Developer Tools**: JSON formatter/validator, Base64, URL encode/decode, UUID generator, MD5 hash, URL parser
-- **Binary Converters**: Text/binary/hex/decimal/octal conversions
-- **Unit Converters**: Length, weight, temperature, area, volume, speed, digital storage, time
-- **Calculators**: Age, percentage, loan, discount, GST, average, number-to-words, Roman numerals
-- **Utility Tools**: Password generator, QR code generator, color converter, IP lookup
-- **Image Tools**: Image to Base64 and Base64 to image
-- **Website Tools**: Browser info, user agent, screen resolution, website status checker
+### 🚀 Stack & Infrastructure
+```yaml
+Host_Platform: Bolt.host
+Architecture: Modern Static Web Gateway
+Performance: Ultra-Low Latency | Edge Delivery
+Compatibility: Mobile-First / Termux Browser / Desktop
 
-## Tech Stack
+📦 Key Features
+ * [migration] Re-hosted from GitHub Pages to Bolt.host for improved deployment speeds and edge performance.
+ * [ui/ux] Refactored interface with modern styling, seamless navigation, and dark-mode aesthetic.
+ * [hub] Centralized routing for open-source scripts, Telegram utilities, and project documentation.
+ * [SEO] Enhanced open-graph metadata for preview rendering across social platforms.
+🌐 Direct Access
+# Visit the live site
+curl -I [https://teamxdbd.bolt.host](https://teamxdbd.bolt.host)
 
-- React 18 + TypeScript
-- Vite
-- Tailwind CSS
-- Lucide Icons
+🔗 Live URL: https://teamxdbd.bolt.host
 
-## Getting Started
-
-```bash
-npm install
-npm run dev
-```
-
-## Build
-
-```bash
-npm run build
-```
-
-## Deploy to GitHub Pages
-
-1. Push this repository to GitHub
-2. Go to Settings > Pages > Source: GitHub Actions
-3. Push to `main` — the deploy workflow builds and publishes automatically
-4. Your site goes live at `https://<your-username>.github.io/<repo-name>/`
-
-## Create a Release
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-This triggers a GitHub Release with auto-generated changelog.
