@@ -24,6 +24,12 @@ export function BINFinder() {
 
   const loadEntries = useCallback(async () => {
     setLoading(true);
+    if (!supabase) {
+      setError('Database is not configured. BIN directory is unavailable.');
+      setAllEntries([]);
+      setLoading(false);
+      return;
+    }
     const { data, error: dbError } = await supabase
       .from('shared_bin_entries')
       .select('id, alias, app_name, bin_prefix, country, testing_notes, created_at')
@@ -149,6 +155,11 @@ export function BINShare() {
     }
     setSubmitting(true);
     setSuccess(false);
+    if (!supabase) {
+      setError('Database is not configured. Sharing is unavailable.');
+      setSubmitting(false);
+      return;
+    }
     const { data, error: rpcError } = await supabase.rpc('submit_shared_bin', {
       p_alias: alias.trim(),
       p_app_name: appName.trim(),

@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name for the release (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
 
 permissions:
   contents: write
@@ -26,6 +31,9 @@ jobs:
         run: |
           npm ci
           npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -42,30 +50,46 @@ jobs:
         working-directory: android
         run: gradle wrapper --gradle-version 8.5
 
-      - name: Build debug APK
+      - name: Build release APK
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon -x lint
+        run: ./gradlew assembleRelease --no-daemon -x lint
 
-      - name: Rename APK
-        id: apk_info
+      - name: Sign APK
+        id: sign_apk
         run: |
-          APK_PATH="android/app/build/outputs/apk/debug/app-debug.apk"
-          APK_NAME="TeamXD-Tools-${GITHUB_REF_NAME:-manual}.apk"
-          cp "$APK_PATH" "$APK_NAME"
+          APK_PATH="android/app/build/outputs/apk/release/app-release-unsigned.apk"
+          if [ ! -f "$APK_PATH" ]; then
+            echo "Release APK not found, falling back to debug"
+            APK_PATH="android/app/build/outputs/apk/debug/app-debug.apk"
+          fi
+          TAG="${GITHUB_REF_NAME:-${{ inputs.tag_name }}}"
+          APK_NAME="TeamXD-Tools-${TAG}.apk"
+          if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > /tmp/keystore.jks
+            apksigner sign --ks /tmp/keystore.jks \
+              --ks-pass "pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+              --ks-key-alias "${{ secrets.ANDROID_KEY_ALIAS }}" \
+              --key-pass "pass:${{ secrets.ANDROID_KEY_PASSWORD }}" \
+              --out "$APK_NAME" "$APK_PATH"
+          else
+            cp "$APK_PATH" "$APK_NAME"
+          fi
           echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: teamxd-tools-apk
-          path: ${{ steps.apk_info.outputs.apk_name }}
+          path: ${{ steps.sign_apk.outputs.apk_name }}
 
       - name: Create GitHub Release with APK
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.sign_apk.outputs.tag }}
           generate_release_notes: true
-          files: ${{ steps.apk_info.outputs.apk_name }}
-          name: TeamXD Tools ${{ github.ref_name }}
+          files: ${{ steps.sign_apk.outputs.apk_name }}
+          name: TeamXD Tools ${{ steps.sign_apk.outputs.tag }}
           body: |
             ## TeamXD Tools — Android APK Release
 
