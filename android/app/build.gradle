@@ -14,18 +14,10 @@ android {
         versionName = "1.0.0"
     }
 
-    signingConfigs {
-        getByName("debug") {
-            // Uses default debug keystore automatically
-        }
-    }
-
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Fallback to debug signing so APK is installable without a custom keystore
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
