@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Calculator, TrendingUp, Wallet, ArrowRight, Smartphone, Info } from 'lucide-react';
+import { TrendingUp, Wallet, ArrowRight, Smartphone, Info } from 'lucide-react';
 
 interface FeeTier {
   value: string;
