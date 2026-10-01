@@ -48,9 +48,12 @@ jobs:
 
       - name: Build debug APK
         working-directory: android
+        env:
+          GRADLE_USER_HOME: ${{ runner.temp }}/gradle-home
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon -x lint
+          ./gradlew --version
+          ./gradlew assembleDebug --no-daemon --no-build-cache --stacktrace -x lint
 
       - name: Determine tag name
         id: tag
