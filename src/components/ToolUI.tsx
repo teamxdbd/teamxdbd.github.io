@@ -15,7 +15,7 @@ export function ToolLayout({ tool, onBack, children }: ToolLayoutProps) {
   const category = categories.find((c) => c.id === tool.category);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div>
       <BackButton onClick={onBack} label={`Back to ${category?.name ?? 'Tools'}`} />
       <div className="flex items-center gap-4 mb-8">
         <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/20 shadow-lg shadow-cyan-500/10">

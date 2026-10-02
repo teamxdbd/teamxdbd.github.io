@@ -7,36 +7,48 @@ interface HomePageProps {
 }
 
 export function HomePage({ onNavigate }: HomePageProps) {
+  const popularSlugs = [
+    'bkash-charge-calculator',
+    'nagad-charge-calculator',
+    'rocket-charge-calculator',
+    'credit-card-generator',
+    'password-generator',
+    'temp-mail',
+  ];
+  const popularTools = popularSlugs
+    .map((s) => tools.find((t) => t.slug === s))
+    .filter(Boolean) as typeof tools;
+
   return (
     <div className="bg-slate-950">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden border-b border-slate-800">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950" />
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-slate-800/80">
         <div
-          className="absolute inset-0 opacity-50"
+          className="absolute inset-0 opacity-40"
           style={{
             backgroundImage:
-              'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(6, 182, 212, 0.15), transparent), radial-gradient(ellipse 60% 40% at 80% 10%, rgba(37, 99, 235, 0.10), transparent), radial-gradient(ellipse 50% 30% at 20% 20%, rgba(6, 182, 212, 0.06), transparent)',
+              'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(6, 182, 212, 0.12), transparent), radial-gradient(ellipse 60% 40% at 80% 10%, rgba(37, 99, 235, 0.08), transparent)',
           }}
         />
-        {/* Grid pattern overlay */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.025]"
           style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
             backgroundSize: '40px 40px',
           }}
         />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold mb-6">
             <Icons.Sparkles className="h-3.5 w-3.5" />
-            Powered by TeamXD
+            One Step Online Tools
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.1]">
             Free Online Web Tools
           </h1>
           <p className="mt-5 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            {tools.length}+ free tools for developers, writers, security researchers, and everyday tasks. Fast, private, no sign-up required. Everything runs right in your browser.
+            {tools.length}+ free tools for developers, writers, security researchers, and everyday
+            tasks. Fast, private, no sign-up required. Everything runs right in your browser.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <button
@@ -61,15 +73,62 @@ export function HomePage({ onNavigate }: HomePageProps) {
         </div>
       </section>
 
+      {/* Announcement */}
+      <section className="border-b border-slate-800/60 bg-slate-900/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-center gap-3 text-center">
+          <Icons.Megaphone className="h-4 w-4 text-cyan-400 shrink-0" />
+          <p className="text-sm text-slate-300">
+            Announcement: Get the latest updates, earning opportunities, and free courses on our{' '}
+            <a
+              href="https://t.me/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 font-medium underline underline-offset-2"
+            >
+              Telegram channel
+            </a>
+          </p>
+        </div>
+      </section>
+
+      {/* Popular Tools strip */}
+      <section className="border-b border-slate-800/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h2 className="text-sm font-semibold text-slate-300 mb-4 uppercase tracking-wide">
+            Popular Tools
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {popularTools.map((tool) => {
+              const ToolIcon = (Icons[tool.icon as keyof typeof Icons] ??
+                Icons.Wrench) as Icons.LucideIcon;
+              return (
+                <button
+                  key={tool.slug}
+                  onClick={() => onNavigate(`/tool/${tool.slug}`)}
+                  className="group flex items-center gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 hover:bg-slate-800/60 transition-all duration-200"
+                >
+                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-800 group-hover:bg-cyan-500/10 transition-all duration-200 shrink-0">
+                    <ToolIcon className="h-5 w-5 text-slate-400 group-hover:text-cyan-400 transition-colors duration-200" />
+                  </div>
+                  <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors line-clamp-2 leading-snug text-left">
+                    {tool.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Category Sections */}
       {categories.map((cat) => {
         const catTools = tools.filter((t) => t.category === cat.id);
         if (catTools.length === 0) return null;
-        const IconComp = (Icons[cat.icon as keyof typeof Icons] ?? Icons.Wrench) as Icons.LucideIcon;
+        const IconComp = (Icons[cat.icon as keyof typeof Icons] ??
+          Icons.Wrench) as Icons.LucideIcon;
         return (
           <section key={cat.id} className="border-b border-slate-800/50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-              {/* Category Header */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500/15 to-blue-600/15 border border-cyan-500/20 shrink-0">
@@ -77,7 +136,9 @@ export function HomePage({ onNavigate }: HomePageProps) {
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-white">{cat.name}</h2>
-                    <p className="text-sm text-slate-400 mt-0.5 hidden sm:block">{cat.description}</p>
+                    <p className="text-sm text-slate-400 mt-0.5 hidden sm:block">
+                      {cat.description}
+                    </p>
                   </div>
                 </div>
                 <button
@@ -89,10 +150,10 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 </button>
               </div>
 
-              {/* Tool Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
                 {catTools.slice(0, 12).map((tool) => {
-                  const ToolIcon = (Icons[tool.icon as keyof typeof Icons] ?? Icons.Wrench) as Icons.LucideIcon;
+                  const ToolIcon = (Icons[tool.icon as keyof typeof Icons] ??
+                    Icons.Wrench) as Icons.LucideIcon;
                   return (
                     <button
                       key={tool.slug}
@@ -110,7 +171,6 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 })}
               </div>
 
-              {/* Show count if more than 12 */}
               {catTools.length > 12 && (
                 <div className="mt-4 text-center">
                   <button
@@ -127,10 +187,17 @@ export function HomePage({ onNavigate }: HomePageProps) {
         );
       })}
 
-      {/* Stats Banner */}
+      {/* Stats */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border border-cyan-500/20 p-8">
-          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+            }}
+          />
           <div className="relative grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
             <div>
               <div className="text-3xl font-bold text-cyan-300">{tools.length}+</div>

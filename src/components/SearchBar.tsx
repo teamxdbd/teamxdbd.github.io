@@ -9,7 +9,7 @@ interface SearchBarProps {
   autoFocus?: boolean;
 }
 
-export function SearchBar({ onSelectTool, placeholder = 'Search 130+ tools...', autoFocus }: SearchBarProps) {
+export function SearchBar({ onSelectTool, placeholder = 'Search 220+ tools...', autoFocus }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Tool[]>([]);
   const [open, setOpen] = useState(false);

@@ -41,11 +41,11 @@ import { DNSLookupTool, HTTPMethodChecker, CORSTester, SSLInfoChecker, HTTPHeade
 import { AIPromptGenerator, TextSummarizer, HashtagGenerator, WordFrequencyAnalyzer } from '@/tools/AITools';
 import { TipCalculator, BMICalculator, PomodoroTimer, UnitPriceCalculator, DecisionMaker } from '@/tools/LifestyleTools';
 import { PDFTextExtractor } from '@/tools/PDFTools';
-import { BINChecker, CCTestGenerator, TempMailInfo, WhatIsMyOS, WhatIsMyScreenResolutionEnhanced, WebsiteSourceViewer, PasswordStrengthChecker, HTTPStatusReference, SSLCertificateChecker, HTAccessRedirectGeneratorEnhanced, WordPressPasswordGeneratorEnhanced } from '@/tools/TeamCSBTools';
-import { PDFMetadataViewer, PDFPageCounter, PDFInfo, PDFCompressorInfo, PDFMergerInfo, PDFToImageInfo } from '@/tools/MorePDFTools';
-import { YAMLToJSON, JSONToYAML, MorseCodeConverter, OGTagGenerator, SitemapGenerator, GradientGenerator, FaviconGeneratorInfo, NumberToWordsMulti, URLShortenerInfo, MultiHashGenerator, ColorPickerInfo, JSONToProperties } from '@/tools/ExtraTools';
-import { BINFinder, BINShare, CreditCardGenerator, LiveCCCheckerInfo, QRCodeScannerInfo, WhoisLookupInfo, DNSLookupInfo, ReverseDNSInfo, IPGeolocationInfo, EmailValidatorInfo, PDFToWordInfo, PDFToExcelInfo, ImageCompressorInfo, VideoConverterInfo, AudioConverterInfo, PasswordManagerInfo, VPNServiceInfo, CloudStorageInfo, CodeFormatterInfo, APITestingInfo, SEOToolsInfo, SSLCertificateInfo, WebsiteBuilderInfo, LearningResourcesInfo, BackgroundRemoverInfo } from '@/tools/MoreTeamCSBTools';
-import { SentimentAnalyzer, GrammarChecker, ContentIdeaGenerator, SEOMetaGenerator, TextRephraser, AIToolsDirectoryInfo } from '@/tools/MoreAITools';
+import { BINChecker, CCTestGenerator, TempMailInfo, WhatIsMyOS, PasswordStrengthChecker, LiveCCChecker, LiveCCCheckerV2 } from '@/tools/TeamCSBTools';
+import { PDFMetadataViewer, PDFPageCounter, PDFInfo } from '@/tools/MorePDFTools';
+import { YAMLToJSON, JSONToYAML, MorseCodeConverter, OGTagGenerator, SitemapGenerator, GradientGenerator, MultiHashGenerator, JSONToProperties } from '@/tools/ExtraTools';
+import { BINFinder, BINShare, CreditCardGenerator } from '@/tools/MoreTeamCSBTools';
+import { SentimentAnalyzer, GrammarChecker, ContentIdeaGenerator, SEOMetaGenerator, TextRephraser } from '@/tools/MoreAITools';
 
 const componentMap: Record<string, React.ComponentType> = {
   // Text
@@ -154,11 +154,8 @@ const componentMap: Record<string, React.ComponentType> = {
   'discount-calculator': DiscountCalculator,
   'gst-calculator': GSTCalculator,
   'average-calculator': AverageCalculator,
-  'number-to-words': NumberToWordConverter,
   'number-to-word-converter': NumberToWordConverter,
-  'word-to-number': WordToNumberConverter,
   'word-to-number-converter': WordToNumberConverter,
-  'roman-numerals': NumberToRomanNumerals,
   'number-to-roman-numerals': NumberToRomanNumerals,
   'roman-numerals-to-number': RomanNumeralsToNumber,
   'sales-tax-calculator': SalesTaxCalculator,
@@ -277,20 +274,12 @@ const componentMap: Record<string, React.ComponentType> = {
   'cc-test-generator': CCTestGenerator,
   'temp-mail': TempMailInfo,
   'what-is-my-os': WhatIsMyOS,
-  'what-is-my-screen-resolution-enhanced': WhatIsMyScreenResolutionEnhanced,
-  'website-source-viewer': WebsiteSourceViewer,
   'password-strength-checker': PasswordStrengthChecker,
-  'http-status-reference': HTTPStatusReference,
-  'ssl-certificate-checker': SSLCertificateChecker,
-  'htaccess-redirect-generator-enhanced': HTAccessRedirectGeneratorEnhanced,
-  'wordpress-password-generator-enhanced': WordPressPasswordGeneratorEnhanced,
   // More PDF Tools
   'pdf-metadata-viewer': PDFMetadataViewer,
   'pdf-page-counter': PDFPageCounter,
   'pdf-info': PDFInfo,
-  'pdf-compressor-info': PDFCompressorInfo,
-  'pdf-merger-info': PDFMergerInfo,
-  'pdf-to-image-info': PDFToImageInfo,
+
   // Extra Tools
   'yaml-to-json': YAMLToJSON,
   'json-to-yaml': JSONToYAML,
@@ -298,45 +287,21 @@ const componentMap: Record<string, React.ComponentType> = {
   'og-tag-generator': OGTagGenerator,
   'sitemap-generator': SitemapGenerator,
   'gradient-generator': GradientGenerator,
-  'favicon-generator-info': FaviconGeneratorInfo,
-  'number-to-words-multi': NumberToWordsMulti,
-  'url-shortener-info': URLShortenerInfo,
   'multi-hash-generator': MultiHashGenerator,
-  'color-picker-info': ColorPickerInfo,
   'json-to-properties': JSONToProperties,
   // More TeamXD Tools
   'bin-finder': BINFinder,
   'bin-share': BINShare,
   'credit-card-generator': CreditCardGenerator,
-  'live-cc-checker-info': LiveCCCheckerInfo,
-  'qr-code-scanner-info': QRCodeScannerInfo,
-  'whois-lookup-info': WhoisLookupInfo,
-  'dns-lookup-info': DNSLookupInfo,
-  'reverse-dns-info': ReverseDNSInfo,
-  'ip-geolocation-info': IPGeolocationInfo,
-  'email-validator-info': EmailValidatorInfo,
-  'pdf-to-word-info': PDFToWordInfo,
-  'pdf-to-excel-info': PDFToExcelInfo,
-  'image-compressor-info': ImageCompressorInfo,
-  'video-converter-info': VideoConverterInfo,
-  'audio-converter-info': AudioConverterInfo,
-  'password-manager-info': PasswordManagerInfo,
-  'vpn-service-info': VPNServiceInfo,
-  'cloud-storage-info': CloudStorageInfo,
-  'code-formatter-info': CodeFormatterInfo,
-  'api-testing-info': APITestingInfo,
-  'seo-tools-info': SEOToolsInfo,
-  'ssl-certificate-info': SSLCertificateInfo,
-  'website-builder-info': WebsiteBuilderInfo,
-  'learning-resources-info': LearningResourcesInfo,
-  'background-remover-info': BackgroundRemoverInfo,
+  'live-cc-checker': LiveCCChecker,
+  'live-cc-checker-v2': LiveCCCheckerV2,
+
   // More AI Tools
   'sentiment-analyzer': SentimentAnalyzer,
   'grammar-checker': GrammarChecker,
   'content-idea-generator': ContentIdeaGenerator,
   'seo-meta-generator': SEOMetaGenerator,
   'text-rephraser': TextRephraser,
-  'ai-tools-directory': AIToolsDirectoryInfo,
 };
 
 export const toolEntries: ToolEntry[] = tools.map((t) => ({

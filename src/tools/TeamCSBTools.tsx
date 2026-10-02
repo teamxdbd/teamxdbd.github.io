@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ToolInput, ToolButton, ToolError, CopyButton } from '@/components/ToolUI';
-import { CreditCard, Mail, Monitor, Globe, Smartphone, Search, ShieldCheck, Activity, Clock, Wifi, Palette } from 'lucide-react';
+import { CreditCard, Mail, Monitor, Globe, Smartphone, Search, ShieldCheck, Activity, Clock, Wifi, Palette, CheckCircle2, XCircle, Loader2, AlertTriangle } from 'lucide-react';
 
 // === BIN Checker ===
 const BIN_DATA: Record<string, { brand: string; bank: string; type: string; country: string }> = {
@@ -63,10 +63,11 @@ const BIN_DATA: Record<string, { brand: string; bank: string; type: string; coun
 
 export function BINChecker() {
   const [bin, setBin] = useState('');
-  const [result, setResult] = useState<{ brand: string; bank: string; type: string; country: string; level: string } | null>(null);
+  const [result, setResult] = useState<{ brand: string; bank: string; type: string; country: string; level: string; flag: string } | null>(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const check = () => {
+  const check = async () => {
     const cleaned = bin.replace(/\s/g, '').replace(/-/g, '');
     if (!/^\d{6}$/.test(cleaned)) {
       setError('Enter the first 6 digits of a card number.');
@@ -74,7 +75,50 @@ export function BINChecker() {
       return;
     }
     setError('');
-    let match = null;
+    setLoading(true);
+
+    const levels = ['Classic', 'Gold', 'Platinum', 'World', 'World Elite', 'Business', 'Corporate'];
+    const level = levels[parseInt(cleaned[5]) % levels.length];
+
+    try {
+      const res = await fetch(`https://data.handyapi.com/bin/${cleaned}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && (data.scheme || data.bank || data.country)) {
+          setResult({
+            brand: data.scheme ? data.scheme.charAt(0).toUpperCase() + data.scheme.slice(1) : 'Unknown',
+            bank: data.bank?.name || data.issuer || 'Unknown',
+            type: data.type ? data.type.charAt(0).toUpperCase() + data.type.slice(1) : 'Credit/Debit',
+            country: data.country?.name || data.country?.alpha2 || 'Unknown',
+            level: data.brand || level,
+            flag: data.country?.alpha2 || '',
+          });
+          setLoading(false);
+          return;
+        }
+      }
+    } catch { /* fall through to local lookup */ }
+
+    try {
+      const res2 = await fetch(`https://lookup.binlist.net/${cleaned}`);
+      if (res2.ok) {
+        const data2 = await res2.json();
+        if (data2 && (data2.scheme || data2.bank || data2.country)) {
+          setResult({
+            brand: data2.scheme ? data2.scheme.charAt(0).toUpperCase() + data2.scheme.slice(1) : 'Unknown',
+            bank: data2.bank?.name || 'Unknown',
+            type: data2.type ? data2.type.charAt(0).toUpperCase() + data2.type.slice(1) : 'Credit/Debit',
+            country: data2.country?.name || 'Unknown',
+            level: data2.brand || level,
+            flag: data2.country?.alpha2 || '',
+          });
+          setLoading(false);
+          return;
+        }
+      }
+    } catch { /* fall through to local lookup */ }
+
+    let match: { brand: string; bank: string; type: string; country: string } | null = null;
     for (let len = 4; len >= 1; len--) {
       const prefix = cleaned.substring(0, len);
       if (BIN_DATA[prefix]) { match = BIN_DATA[prefix]; break; }
@@ -82,16 +126,18 @@ export function BINChecker() {
     if (!match) {
       match = { brand: 'Unknown', bank: 'Unknown', type: 'Unknown', country: 'Unknown' };
     }
-    const levels = ['Classic', 'Gold', 'Platinum', 'World', 'World Elite', 'Business', 'Corporate'];
-    const level = levels[parseInt(cleaned[5]) % levels.length];
-    setResult({ ...match, level });
+    setResult({ ...match, level, flag: '' });
+    setLoading(false);
   };
 
   return (
     <div className="space-y-6">
       <ToolInput label="BIN (First 6 digits)" value={bin} onChange={setBin} placeholder="451890" rows={1} />
-      <ToolButton onClick={check} disabled={!bin.trim()}>
-        <span className="flex items-center gap-2"><CreditCard className="h-4 w-4" /> Check BIN</span>
+      <ToolButton onClick={check} disabled={!bin.trim() || loading}>
+        <span className="flex items-center gap-2">
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+          {loading ? 'Checking...' : 'Check BIN'}
+        </span>
       </ToolButton>
       {error && <ToolError message={error} />}
       {result && (
@@ -104,6 +150,11 @@ export function BINChecker() {
               <div className="text-lg font-bold text-white">{result.brand}</div>
               <div className="text-xs text-slate-400">{result.type}</div>
             </div>
+            {result.flag && (
+              <span className="ml-auto text-3xl" title={result.country}>
+                {String.fromCodePoint(...[...result.flag.toUpperCase()].map((c) => 127397 + c.charCodeAt(0)))}
+              </span>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-3">
             {[
@@ -121,7 +172,7 @@ export function BINChecker() {
         </div>
       )}
       <div className="text-xs text-slate-500 bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3">
-        For educational and testing purposes only. The BIN database is limited and may not cover all ranges.
+        For educational and testing purposes only. BIN data is sourced from public APIs and may not cover all ranges.
       </div>
     </div>
   );
@@ -219,18 +270,106 @@ export function CCTestGenerator() {
 }
 
 // === Temp Mail Info ===
+interface MailMessage {
+  id: string;
+  from: { address: string; name: string };
+  subject: string;
+  intro: string;
+  seen: boolean;
+  createdAt: string;
+  body?: string;
+}
+
 export function TempMailInfo() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [token, setToken] = useState('');
+  const [messages, setMessages] = useState<MailMessage[]>([]);
+  const [selectedMsg, setSelectedMsg] = useState<MailMessage | null>(null);
   const [copied, setCopied] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState(false);
+  const [error, setError] = useState('');
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const generate = () => {
-    const domains = ['tempmail.io', 'guerrillamail.com', 'mailinator.com', 'temp-mail.org', '10minutemail.com', 'yopmail.com'];
-    const names = ['user', 'test', 'temp', 'demo', 'sample', 'quick', 'fast', 'mail', 'inbox', 'box'];
-    const numbers = Math.floor(Math.random() * 9999);
-    const name = names[Math.floor(Math.random() * names.length)] + numbers;
-    const domain = domains[Math.floor(Math.random() * domains.length)];
-    setEmail(`${name}@${domain}`);
-    setCopied(false);
+  const randomString = (len: number) => {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let s = '';
+    const arr = new Uint32Array(len);
+    crypto.getRandomValues(arr);
+    for (let i = 0; i < len; i++) s += chars[arr[i] % chars.length];
+    return s;
+  };
+
+  const createInbox = async () => {
+    setCreating(true);
+    setError('');
+    setMessages([]);
+    setSelectedMsg(null);
+    if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    try {
+      const domRes = await fetch('https://api.mail.tm/domains?page=1');
+      const domData = await domRes.json();
+      const domain = domData['hydra:member']?.[0]?.domain;
+      if (!domain) { setError('No email domains available right now.'); setCreating(false); return; }
+      const addr = `${randomString(10)}@${domain}`;
+      const pwd = randomString(16);
+      const createRes = await fetch('https://api.mail.tm/accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: addr, password: pwd }),
+      });
+      if (!createRes.ok) { setError('Could not create inbox. Please try again.'); setCreating(false); return; }
+      const tokRes = await fetch('https://api.mail.tm/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: addr, password: pwd }),
+      });
+      const tokData = await tokRes.json();
+      if (!tokData.token) { setError('Could not authenticate inbox.'); setCreating(false); return; }
+      setEmail(addr);
+      setPassword(pwd);
+      setToken(tokData.token);
+      startPolling(tokData.token);
+    } catch {
+      setError('Could not connect to mail service. Check your connection.');
+    }
+    setCreating(false);
+  };
+
+  const fetchMessages = async (tok: string) => {
+    setRefreshing(true);
+    try {
+      const res = await fetch('https://api.mail.tm/messages?page=1', {
+        headers: { Authorization: `Bearer ${tok}` },
+      });
+      const data = await res.json();
+      setMessages(data['hydra:member'] || []);
+    } catch { /* ignore */ }
+    setRefreshing(false);
+  };
+
+  const startPolling = (tok: string) => {
+    fetchMessages(tok);
+    pollRef.current = setInterval(() => fetchMessages(tok), 10000);
+  };
+
+  useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
+
+  const viewMessage = async (msg: MailMessage) => {
+    setLoadingMsg(true);
+    try {
+      const res = await fetch(`https://api.mail.tm/messages/${msg.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const fullMsg = { ...msg, body: data.html?.[0] || data.text || msg.intro };
+      setSelectedMsg(fullMsg);
+    } catch {
+      setSelectedMsg({ ...msg, body: msg.intro });
+    }
+    setLoadingMsg(false);
   };
 
   const copy = () => {
@@ -253,29 +392,98 @@ export function TempMailInfo() {
       <div className="rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border border-cyan-500/20 p-5">
         <div className="flex items-center gap-2 mb-3">
           <Mail className="h-5 w-5 text-cyan-400" />
-          <h3 className="text-sm font-bold text-white">Quick Email Generator</h3>
+          <h3 className="text-sm font-bold text-white">Disposable Email Inbox</h3>
         </div>
-        <p className="text-xs text-slate-400 mb-4">Generate a random email address to use with disposable email services.</p>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={email}
-            readOnly
-            placeholder="Click generate..."
-            className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white text-sm font-mono placeholder:text-slate-500 focus:outline-none"
-          />
-          <button onClick={generate} className="px-4 py-2.5 rounded-lg bg-cyan-500 text-white text-sm font-medium hover:bg-cyan-400 transition-all">
-            Generate
+        <p className="text-xs text-slate-400 mb-4">Create a real temporary email address. Receive emails directly in your browser — no signup, no personal info needed.</p>
+        {email ? (
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={email}
+                readOnly
+                className="flex-1 rounded-lg bg-slate-900 border border-slate-700 px-4 py-2.5 text-white text-sm font-mono focus:outline-none"
+              />
+              <button onClick={copy} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-200 hover:bg-slate-600'}`}>
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+              <button onClick={createInbox} disabled={creating} className="px-4 py-2.5 rounded-lg bg-slate-700 text-slate-200 hover:bg-slate-600 text-sm font-medium transition-all">
+                New
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button onClick={createInbox} disabled={creating} className="px-5 py-2.5 rounded-lg bg-cyan-500 text-white text-sm font-medium hover:bg-cyan-400 transition-all disabled:opacity-50">
+            {creating ? 'Creating...' : 'Create Temporary Inbox'}
           </button>
-          {email && (
-            <button onClick={copy} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-200 hover:bg-slate-600'}`}>
-              {copied ? 'Copied!' : 'Copy'}
-            </button>
-          )}
-        </div>
+        )}
+        {error && <p className="text-xs text-rose-400 mt-3">{error}</p>}
       </div>
+
+      {email && (
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4">
+          <div className="rounded-xl bg-slate-900 border border-slate-700 overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+              <span className="text-sm font-semibold text-white">Inbox</span>
+              <button onClick={() => fetchMessages(token)} disabled={refreshing} className="text-xs text-cyan-400 hover:text-cyan-300 disabled:opacity-50 flex items-center gap-1">
+                {refreshing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Clock className="h-3 w-3" />}
+                Refresh
+              </button>
+            </div>
+            <div className="max-h-80 overflow-y-auto">
+              {messages.length === 0 ? (
+                <div className="px-4 py-8 text-center">
+                  <Mail className="h-8 w-8 text-slate-600 mx-auto mb-2" />
+                  <p className="text-xs text-slate-500">No messages yet. Waiting for emails...</p>
+                  <p className="text-xs text-slate-600 mt-1">Auto-refreshes every 10s</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-800">
+                  {messages.map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => viewMessage(m)}
+                      className={`w-full text-left px-4 py-3 hover:bg-slate-800/50 transition-colors ${selectedMsg?.id === m.id ? 'bg-slate-800/50' : ''}`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        {!m.seen && <span className="w-2 h-2 rounded-full bg-cyan-400 shrink-0" />}
+                        <span className="text-xs font-medium text-white truncate">{m.from?.name || m.from?.address || 'Unknown'}</span>
+                      </div>
+                      <p className="text-xs text-slate-400 truncate">{m.subject || '(no subject)'}</p>
+                      <p className="text-xs text-slate-600 mt-0.5">{new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-slate-900 border border-slate-700 min-h-[200px]">
+            {loadingMsg ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-6 w-6 text-cyan-400 animate-spin" />
+              </div>
+            ) : selectedMsg ? (
+              <div className="p-5 space-y-4">
+                <div className="border-b border-slate-700 pb-3">
+                  <h3 className="text-sm font-bold text-white">{selectedMsg.subject || '(no subject)'}</h3>
+                  <p className="text-xs text-slate-400 mt-1">From: {selectedMsg.from?.name || 'Unknown'} &lt;{selectedMsg.from?.address}&gt;</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{new Date(selectedMsg.createdAt).toLocaleString()}</p>
+                </div>
+                <div className="text-sm text-slate-300 prose-invert max-w-none overflow-y-auto max-h-96" dangerouslySetInnerHTML={{ __html: selectedMsg.body || selectedMsg.intro }} />
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <Mail className="h-10 w-10 text-slate-600 mb-3" />
+                <p className="text-sm text-slate-500">Select a message to read it</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div>
-        <h3 className="text-sm font-bold text-white mb-3">Recommended Disposable Email Services</h3>
+        <h3 className="text-sm font-bold text-white mb-3">Other Disposable Email Services</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {services.map((s) => (
             <a
@@ -721,6 +929,274 @@ export function WordPressPasswordGeneratorEnhanced() {
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+// === Live CC Checker ===
+function luhnValid(cardNumber: string): boolean {
+  const digits = cardNumber.replace(/\D/g, '');
+  if (digits.length < 13) return false;
+  let sum = 0;
+  let alt = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let n = parseInt(digits[i]);
+    if (alt) { n *= 2; if (n > 9) n -= 9; }
+    sum += n;
+    alt = !alt;
+  }
+  return sum % 10 === 0;
+}
+
+function detectBrand(cardNumber: string): string {
+  const n = cardNumber.replace(/\D/g, '');
+  if (n.startsWith('4')) return 'Visa';
+  if (/^5[1-5]/.test(n) || /^2[2-7]/.test(n)) return 'Mastercard';
+  if (/^3[47]/.test(n)) return 'American Express';
+  if (/^(6011|65|64[4-9])/.test(n)) return 'Discover';
+  if (/^35/.test(n)) return 'JCB';
+  if (/^3[0689]/.test(n)) return 'Diners Club';
+  if (/^(50|56|57|58|63|67)/.test(n)) return 'Maestro';
+  return 'Unknown';
+}
+
+interface CheckResult {
+  card: string;
+  brand: string;
+  luhnValid: boolean;
+  length: number;
+  status: 'valid' | 'invalid';
+}
+
+export function LiveCCChecker() {
+  const [input, setInput] = useState('');
+  const [results, setResults] = useState<CheckResult[]>([]);
+  const [checking, setChecking] = useState(false);
+
+  const check = () => {
+    const cards = input
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
+
+    if (cards.length === 0) return;
+
+    setChecking(true);
+    setTimeout(() => {
+      const cardResults: CheckResult[] = cards.map((card) => {
+        const cleaned = card.split('|')[0].replace(/\D/g, '');
+        const brand = detectBrand(cleaned);
+        const valid = luhnValid(cleaned);
+        return {
+          card: cleaned,
+          brand,
+          luhnValid: valid,
+          length: cleaned.length,
+          status: valid ? 'valid' as const : 'invalid' as const,
+        };
+      });
+      setResults(cardResults);
+      setChecking(false);
+    }, 300);
+  };
+
+  return (
+    <div className="space-y-6">
+      <ToolInput
+        label="Card Numbers (one per line)"
+        value={input}
+        onChange={setInput}
+        placeholder={'4111111111111111\n5500000000000004'}
+        rows={6}
+        mono
+      />
+      <ToolButton onClick={check} disabled={!input.trim() || checking}>
+        <span className="flex items-center gap-2">
+          {checking ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+          {checking ? 'Checking...' : 'Check Cards'}
+        </span>
+      </ToolButton>
+
+      {results.length > 0 && (
+        <div className="space-y-2">
+          <div className="text-sm text-slate-400">
+            Results ({results.length} cards checked):
+          </div>
+          {results.map((r, i) => (
+            <div
+              key={i}
+              className={`flex items-center gap-3 rounded-lg border px-4 py-3 ${
+                r.status === 'valid'
+                  ? 'bg-emerald-500/10 border-emerald-500/30'
+                  : 'bg-rose-500/10 border-rose-500/30'
+              }`}
+            >
+              {r.status === 'valid' ? (
+                <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+              ) : (
+                <XCircle className="h-5 w-5 text-rose-400 shrink-0" />
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="font-mono text-sm text-white">
+                  {r.card.replace(/(.{4})/g, '$1 ').trim()}
+                </div>
+                <div className="text-xs text-slate-400 mt-0.5">
+                  {r.brand} &middot; {r.length} digits &middot; Luhn: {r.luhnValid ? 'Pass' : 'Fail'}
+                </div>
+              </div>
+              <span
+                className={`text-xs font-semibold px-2 py-1 rounded ${
+                  r.status === 'valid'
+                    ? 'bg-emerald-500/20 text-emerald-300'
+                    : 'bg-rose-500/20 text-rose-300'
+                }`}
+              >
+                {r.status === 'valid' ? 'Valid' : 'Invalid'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-start gap-2 text-xs text-slate-500 bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3">
+        <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-400" />
+        <span>
+          This tool checks card number formatting and Luhn validation only. It does not verify
+          whether a card is active or connected to a real account. For educational and testing
+          purposes only.
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// === Live CC Checker V2 ===
+export function LiveCCCheckerV2() {
+  const [input, setInput] = useState('');
+  const [results, setResults] = useState<CheckResult[]>([]);
+  const [checking, setChecking] = useState(false);
+
+  const check = () => {
+    const cards = input
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
+
+    if (cards.length === 0) return;
+
+    setChecking(true);
+    setTimeout(() => {
+      const cardResults: CheckResult[] = cards.map((card) => {
+        const cardNum = card.split('|')[0].replace(/\D/g, '');
+        const brand = detectBrand(cardNum);
+        const valid = luhnValid(cardNum);
+        return {
+          card: cardNum,
+          brand,
+          luhnValid: valid,
+          length: cardNum.length,
+          status: valid ? 'valid' as const : 'invalid' as const,
+        };
+      });
+      setResults(cardResults);
+      setChecking(false);
+    }, 500);
+  };
+
+  const validCount = results.filter((r) => r.status === 'valid').length;
+  const invalidCount = results.filter((r) => r.status === 'invalid').length;
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border border-cyan-500/20 p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <CreditCard className="h-5 w-5 text-cyan-400" />
+          <h3 className="text-sm font-bold text-white">CC Checker V2</h3>
+        </div>
+        <p className="text-xs text-slate-400">
+          Supports format: <code className="text-cyan-300">CARD|MM|YYYY|CVV</code>. Checks Luhn
+          validation, card brand, and number length. Batch check up to 50 cards at once.
+        </p>
+      </div>
+
+      <ToolInput
+        label="Card Numbers (one per line, format: NUMBER|MM|YYYY|CVV)"
+        value={input}
+        onChange={setInput}
+        placeholder={'4111111111111111|12|2028|123\n5500000000000004|06|2027|456'}
+        rows={8}
+        mono
+      />
+      <ToolButton onClick={check} disabled={!input.trim() || checking}>
+        <span className="flex items-center gap-2">
+          {checking ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+          {checking ? 'Checking...' : 'Check Cards (V2)'}
+        </span>
+      </ToolButton>
+
+      {results.length > 0 && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-lg bg-slate-900 border border-slate-700 px-4 py-3 text-center">
+              <div className="text-2xl font-bold text-white">{results.length}</div>
+              <div className="text-xs text-slate-400 mt-1">Total</div>
+            </div>
+            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-center">
+              <div className="text-2xl font-bold text-emerald-400">{validCount}</div>
+              <div className="text-xs text-emerald-300/70 mt-1">Valid</div>
+            </div>
+            <div className="rounded-lg bg-rose-500/10 border border-rose-500/30 px-4 py-3 text-center">
+              <div className="text-2xl font-bold text-rose-400">{invalidCount}</div>
+              <div className="text-xs text-rose-300/70 mt-1">Invalid</div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {results.map((r, i) => (
+              <div
+                key={i}
+                className={`flex items-center gap-3 rounded-lg border px-4 py-3 ${
+                  r.status === 'valid'
+                    ? 'bg-emerald-500/10 border-emerald-500/30'
+                    : 'bg-rose-500/10 border-rose-500/30'
+                }`}
+              >
+                {r.status === 'valid' ? (
+                  <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+                ) : (
+                  <XCircle className="h-5 w-5 text-rose-400 shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="font-mono text-sm text-white">
+                    {r.card.replace(/(.{4})/g, '$1 ').trim()}
+                  </div>
+                  <div className="text-xs text-slate-400 mt-0.5">
+                    {r.brand} &middot; {r.length} digits
+                  </div>
+                </div>
+                <span
+                  className={`text-xs font-semibold px-2 py-1 rounded ${
+                    r.status === 'valid'
+                      ? 'bg-emerald-500/20 text-emerald-300'
+                      : 'bg-rose-500/20 text-rose-300'
+                  }`}
+                >
+                  {r.status === 'valid' ? 'Valid' : 'Invalid'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-start gap-2 text-xs text-slate-500 bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3">
+        <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-400" />
+        <span>
+          This tool checks card number formatting and Luhn validation only. It does not verify
+          whether a card is active, has funds, or is connected to a real account. For educational
+          and testing purposes only.
+        </span>
+      </div>
     </div>
   );
 }

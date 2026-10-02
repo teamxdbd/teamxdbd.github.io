@@ -1,7 +1,7 @@
 import { useHashRoute } from '@/hooks/useHashRoute';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { TelegramBanner } from '@/components/TelegramBanner';
+import { TelegramModal } from '@/components/TelegramModal';
 import { HomePage } from '@/pages/HomePage';
 import { CategoryPage } from '@/pages/CategoryPage';
 import { ToolPage } from '@/pages/ToolPage';
@@ -45,7 +45,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
-      <TelegramBanner />
+      <TelegramModal />
       <Header onNavigate={navigate} onSearchSelect={(slug) => navigate(`/tool/${slug}`)} />
       <main className="flex-1">{renderRoute()}</main>
       <Footer onNavigate={navigate} />

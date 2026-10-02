@@ -1,4 +1,4 @@
-import { VenetianMask, Send, AlertTriangle, Mail } from 'lucide-react';
+import { Terminal, Send, AlertTriangle, Mail } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 
 interface HeaderProps {
@@ -8,18 +8,18 @@ interface HeaderProps {
 
 export function Header({ onNavigate, onSearchSelect }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-lg border-b border-slate-800">
+    <header className="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-lg border-b border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 h-16">
           <button
             onClick={() => onNavigate('/')}
-            className="flex items-center gap-2 shrink-0 group"
+            className="flex items-center gap-2.5 shrink-0 group"
           >
-            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 shadow-lg shadow-cyan-500/30 group-hover:shadow-cyan-500/50 transition-shadow">
-              <VenetianMask className="h-5 w-5 text-slate-950" />
+            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 shadow-lg shadow-cyan-500/25 group-hover:shadow-cyan-500/40 transition-shadow">
+              <Terminal className="h-5 w-5 text-white" />
             </div>
             <span className="text-lg font-bold text-white tracking-tight">
-              Team<span className="text-cyan-400">XD</span><span className="text-xs text-slate-500 ml-2 font-normal">// toolkit</span>
+              Team<span className="text-cyan-400">XD</span>
             </span>
           </button>
 
@@ -32,21 +32,21 @@ export function Header({ onNavigate, onSearchSelect }: HeaderProps) {
               href="https://t.me/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-sm font-medium"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition-colors text-sm font-medium"
             >
               <Send className="h-4 w-4" />
               <span className="hidden lg:block">Telegram</span>
             </a>
             <button
               onClick={() => onNavigate('/report')}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-sm font-medium"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition-colors text-sm font-medium"
             >
               <AlertTriangle className="h-4 w-4" />
               <span className="hidden lg:block">Report</span>
             </button>
             <button
               onClick={() => onNavigate('/contact')}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-sm font-medium"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70 transition-colors text-sm font-medium"
             >
               <Mail className="h-4 w-4" />
               <span className="hidden lg:block">Contact</span>
