@@ -6,7 +6,7 @@ export function TelegramBanner() {
   if (!visible) return null;
 
   return (
-    <div className="relative bg-gradient-to-r from-cyan-600 via-blue-600 to-blue-700 text-white">
+    <div className="relative bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-950 text-white border-b border-emerald-500/20">
       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex items-center justify-between gap-4">
@@ -15,8 +15,8 @@ export function TelegramBanner() {
               <Send className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold truncate">Join Our Telegram Channel</p>
-              <p className="text-xs text-white/80 truncate hidden sm:block">Get the latest updates, new tools, and tips directly on Telegram.</p>
+              <p className="text-sm font-semibold truncate">// Join the signal</p>
+              <p className="text-xs text-white/70 truncate hidden sm:block">Updates, new tools, and useful drops from the TeamXD network.</p>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -24,7 +24,7 @@ export function TelegramBanner() {
               href="https://t.me/"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-1.5 rounded-lg bg-white text-blue-700 text-sm font-semibold hover:bg-white/90 transition-colors"
+              className="px-4 py-1.5 rounded-lg bg-cyan-300 text-slate-950 text-sm font-semibold hover:bg-cyan-200 transition-colors"
             >
               Join Now
             </a>

@@ -1,4 +1,4 @@
-import { Zap, Send, AlertTriangle, Mail } from 'lucide-react';
+import { VenetianMask, Send, AlertTriangle, Mail } from 'lucide-react';
 import { SearchBar } from '@/components/SearchBar';
 
 interface HeaderProps {
@@ -16,10 +16,10 @@ export function Header({ onNavigate, onSearchSelect }: HeaderProps) {
             className="flex items-center gap-2 shrink-0 group"
           >
             <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 shadow-lg shadow-cyan-500/30 group-hover:shadow-cyan-500/50 transition-shadow">
-              <Zap className="h-5 w-5 text-white" />
+              <VenetianMask className="h-5 w-5 text-slate-950" />
             </div>
-            <span className="text-lg font-bold text-white">
-              Team<span className="text-cyan-400">XD</span>
+            <span className="text-lg font-bold text-white tracking-tight">
+              Team<span className="text-cyan-400">XD</span><span className="text-xs text-slate-500 ml-2 font-normal">// toolkit</span>
             </span>
           </button>
 

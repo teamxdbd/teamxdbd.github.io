@@ -1,4 +1,4 @@
-import { Zap, Send, AlertTriangle, Mail } from 'lucide-react';
+import { VenetianMask, Send, AlertTriangle, Mail } from 'lucide-react';
 import { categories } from '@/data/categories';
 
 interface FooterProps {
@@ -13,14 +13,14 @@ export function Footer({ onNavigate }: FooterProps) {
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600">
-                <Zap className="h-4 w-4 text-white" />
+                <VenetianMask className="h-4 w-4 text-slate-950" />
               </div>
-              <span className="text-lg font-bold text-white">
-                Team<span className="text-cyan-400">XD</span>
+              <span className="text-lg font-bold text-white tracking-tight">
+                Team<span className="text-cyan-400">XD</span><span className="text-xs text-slate-500 ml-2 font-normal">// toolkit</span>
               </span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Free online web tools for developers, writers, and everyday users. Fast, private, and no sign-up required.
+              Free tools for builders, researchers, and everyday users. Fast, private, and designed to stay out of your way.
             </p>
             <div className="flex items-center gap-3 mt-4">
               <a href="https://t.me/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-800 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-400 transition-colors">

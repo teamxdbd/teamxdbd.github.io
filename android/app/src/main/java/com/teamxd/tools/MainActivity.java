@@ -2,6 +2,7 @@ package com.teamxd.tools;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.res.AssetManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -21,14 +22,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.webkit.WebViewAssetLoader;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends Activity {
 
     private static final String APP_URL = "https://appassets.androidplatform.net/index.html";
-    private static final int NAVY = Color.rgb(2, 6, 23);
-    private static final int SLATE = Color.rgb(15, 23, 42);
-    private static final int CYAN = Color.rgb(34, 211, 238);
+    private static final int NAVY = Color.rgb(2, 9, 7);
+    private static final int SLATE = Color.rgb(7, 20, 14);
+    private static final int CYAN = Color.rgb(74, 222, 128);
     private static final int MUTED = Color.rgb(148, 163, 184);
 
     private WebView webView;
@@ -69,19 +71,15 @@ public class MainActivity extends Activity {
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setUserAgentString(settings.getUserAgentString() + " TeamXDAndroid/2.0");
 
-        WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
-                .addPathHandler("/", new WebViewAssetLoader.AssetsPathHandler(this))
-                .build();
-
         view.setWebViewClient(new WebViewClient() {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {
-                return assetLoader.shouldInterceptRequest(request.getUrl());
+                return loadBundledAsset(request.getUrl());
             }
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String url) {
-                return assetLoader.shouldInterceptRequest(Uri.parse(url));
+                return loadBundledAsset(Uri.parse(url));
             }
 
             @Override
@@ -110,7 +108,7 @@ public class MainActivity extends Activity {
         badge.setTextColor(Color.WHITE);
         badge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         badge.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        badge.setBackgroundColor(Color.rgb(8, 145, 178));
+        badge.setBackgroundColor(Color.rgb(22, 163, 74));
         toolbar.addView(badge, new LinearLayout.LayoutParams(dp(42), dp(42)));
 
         LinearLayout titles = new LinearLayout(this);
@@ -209,6 +207,37 @@ public class MainActivity extends Activity {
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "TeamXD Tools");
         shareIntent.putExtra(Intent.EXTRA_TEXT, "TeamXD Tools — a free offline-ready toolkit for developers, writers, security researchers, and everyday tasks.");
         startActivity(Intent.createChooser(shareIntent, "Share TeamXD Tools"));
+    }
+
+    private WebResourceResponse loadBundledAsset(Uri uri) {
+        if (!"appassets.androidplatform.net".equals(uri.getHost())) {
+            return null;
+        }
+
+        String path = uri.getPath();
+        String assetPath = path == null || "/".equals(path) ? "index.html" : path.substring(1);
+        try {
+            AssetManager assets = getAssets();
+            InputStream stream = assets.open(assetPath);
+            String mimeType = mimeTypeFor(assetPath);
+            String encoding = mimeType.startsWith("text/") || "application/javascript".equals(mimeType) ? "UTF-8" : null;
+            return new WebResourceResponse(mimeType, encoding, stream);
+        } catch (IOException exception) {
+            return null;
+        }
+    }
+
+    private String mimeTypeFor(String path) {
+        if (path.endsWith(".html")) return "text/html";
+        if (path.endsWith(".css")) return "text/css";
+        if (path.endsWith(".js")) return "application/javascript";
+        if (path.endsWith(".json")) return "application/json";
+        if (path.endsWith(".svg")) return "image/svg+xml";
+        if (path.endsWith(".png")) return "image/png";
+        if (path.endsWith(".jpg") || path.endsWith(".jpeg")) return "image/jpeg";
+        if (path.endsWith(".webp")) return "image/webp";
+        if (path.endsWith(".ico")) return "image/x-icon";
+        return "application/octet-stream";
     }
 
     private boolean openExternalLink(Uri uri) {
