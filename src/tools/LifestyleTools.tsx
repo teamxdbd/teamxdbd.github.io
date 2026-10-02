@@ -219,12 +219,12 @@ export function PomodoroTimer() {
             playBeep();
             const next = !isBreak;
             setIsBreak(next);
-            if (!next) {
-              setCycles((c) => c + 1);
+            if (next) {
               const isLongBreak = (cycles + 1) % 4 === 0;
-              return isLongBreak ? longBreakMinutes * 60 : workMinutes * 60;
+              return isLongBreak ? longBreakMinutes * 60 : breakMinutes * 60;
             }
-            return next ? breakMinutes * 60 : workMinutes * 60;
+            setCycles((c) => c + 1);
+            return workMinutes * 60;
           }
           return prev - 1;
         });
@@ -361,10 +361,25 @@ export function UnitPriceCalculator() {
   const addItem = () => setItems([...items, { name: '', price: '', quantity: '', unit: 'kg' }]);
   const removeItem = (index: number) => setItems(items.filter((_, i) => i !== index));
 
+  const UNIT_CONVERSIONS: Record<string, number> = {
+    kg: 1000, g: 1, lb: 453.592, oz: 28.3495,
+    l: 1000, ml: 1,
+    meter: 100, cm: 1, ft: 30.48,
+    each: 1, pack: 1, dozen: 12,
+  };
+  const UNIT_GROUPS: Record<string, string> = {
+    kg: 'weight', g: 'weight', lb: 'weight', oz: 'weight',
+    l: 'volume', ml: 'volume',
+    meter: 'length', cm: 'length', ft: 'length',
+    each: 'count', pack: 'count', dozen: 'count',
+  };
+
   const results = items.map((item) => {
     const price = parseFloat(item.price) || 0;
     const qty = parseFloat(item.quantity) || 0;
-    const unitPrice = qty > 0 ? price / qty : 0;
+    const rawUnitPrice = qty > 0 ? price / qty : 0;
+    const factor = UNIT_CONVERSIONS[item.unit] || 1;
+    const unitPrice = rawUnitPrice / factor;
     return { ...item, unitPrice };
   });
 
@@ -461,17 +476,22 @@ export function DecisionMaker() {
   const [spinning, setSpinning] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
 
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
+
   const decide = () => {
     const list = options.split(/[,\n]/).map((o) => o.trim()).filter(Boolean);
     if (list.length < 2) return;
     setSpinning(true);
     setResult('');
     let count = 0;
-    const interval = setInterval(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
       setResult(list[Math.floor(Math.random() * list.length)]);
       count++;
       if (count >= 20) {
-        clearInterval(interval);
+        if (intervalRef.current) clearInterval(intervalRef.current);
         setSpinning(false);
         const final = list[Math.floor(Math.random() * list.length)];
         setResult(final);

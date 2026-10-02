@@ -136,16 +136,20 @@ export function GrammarChecker() {
     let result = text;
 
     for (const rule of GRAMMAR_RULES) {
-      let match;
+      const matches: { index: number; full: string; group: string }[] = [];
       const regex = new RegExp(rule.pattern.source, rule.pattern.flags);
+      let match;
       while ((match = regex.exec(result)) !== null) {
-        found.push({ message: rule.message, position: match.index });
-        result = result.substring(0, match.index) + rule.fix(match[0], match[1] || '') + result.substring(match.index + match[0].length);
+        matches.push({ index: match.index, full: match[0], group: match[1] || '' });
         if (match[0].length === 0) break;
+      }
+      for (let i = matches.length - 1; i >= 0; i--) {
+        const m = matches[i];
+        found.unshift({ message: rule.message, position: m.index });
+        result = result.substring(0, m.index) + rule.fix(m.full, m.group) + result.substring(m.index + m.full.length);
       }
     }
 
-    // Check for missing capital at start of sentences
     const sentences = result.split(/([.!?]\s+)/);
     for (let i = 0; i < sentences.length; i += 2) {
       if (sentences[i] && sentences[i].length > 0 && sentences[i][0] !== sentences[i][0].toUpperCase()) {
@@ -329,20 +333,22 @@ export function SEOMetaGenerator() {
   const [output, setOutput] = useState('');
   const [preview, setPreview] = useState<{ googleTitle: string; googleDesc: string; googleUrl: string } | null>(null);
 
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
   const generate = () => {
     const tags: string[] = [];
-    if (title) tags.push(`<title>${title}</title>`);
-    if (description) tags.push(`<meta name="description" content="${description}" />`);
-    if (keywords) tags.push(`<meta name="keywords" content="${keywords}" />`);
-    if (author) tags.push(`<meta name="author" content="${author}" />`);
+    if (title) tags.push(`<title>${esc(title)}</title>`);
+    if (description) tags.push(`<meta name="description" content="${esc(description)}" />`);
+    if (keywords) tags.push(`<meta name="keywords" content="${esc(keywords)}" />`);
+    if (author) tags.push(`<meta name="author" content="${esc(author)}" />`);
     tags.push('<meta name="robots" content="index, follow" />');
     tags.push(`<meta name="viewport" content="width=device-width, initial-scale=1.0" />`);
-    if (title) tags.push(`<meta property="og:title" content="${title}" />`);
-    if (description) tags.push(`<meta property="og:description" content="${description}" />`);
+    if (title) tags.push(`<meta property="og:title" content="${esc(title)}" />`);
+    if (description) tags.push(`<meta property="og:description" content="${esc(description)}" />`);
     tags.push(`<meta property="og:type" content="website" />`);
     if (title) tags.push(`<meta name="twitter:card" content="summary" />`);
-    if (title) tags.push(`<meta name="twitter:title" content="${title}" />`);
-    if (description) tags.push(`<meta name="twitter:description" content="${description}" />`);
+    if (title) tags.push(`<meta name="twitter:title" content="${esc(title)}" />`);
+    if (description) tags.push(`<meta name="twitter:description" content="${esc(description)}" />`);
     setOutput(tags.join('\n'));
     setPreview({
       googleTitle: title || 'Your Page Title',

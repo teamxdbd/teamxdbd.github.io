@@ -2,6 +2,21 @@ import { useState } from 'react';
 import { ToolInput, ToolButton, CopyButton, ToolError } from '@/components/ToolUI';
 import { Download } from 'lucide-react';
 
+const downloadThumb = async (thumbUrl: string, quality: string) => {
+  try {
+    const res = await fetch(thumbUrl);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `youtube-thumbnail-${quality.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.jpg`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch {
+    window.open(thumbUrl, '_blank');
+  }
+};
+
 // === SRT to VTT ===
 export function SRTToVTT() {
   const [input, setInput] = useState('');
@@ -92,9 +107,9 @@ export function YouTubeThumbnailDownloader() {
             <div key={t.quality} className="rounded-lg bg-slate-900 border border-slate-700 p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-slate-300">{t.quality}</span>
-                <a href={t.url} download target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+                <button onClick={() => downloadThumb(t.url, t.quality)} className="text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
                   <Download className="h-3.5 w-3.5" /> Download
-                </a>
+                </button>
               </div>
               <img src={t.url} alt={t.quality} className="rounded w-full max-h-40 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             </div>

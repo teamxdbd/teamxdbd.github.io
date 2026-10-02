@@ -18,6 +18,16 @@ export function YAMLToJSON() {
     }
   };
 
+  const parseValue = (value: string): unknown => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    if (value === 'null') return null;
+    if (/^-?\d+$/.test(value)) return parseInt(value);
+    if (/^-?\d+\.\d+$/.test(value)) return parseFloat(value);
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) return value.slice(1, -1);
+    return value;
+  };
+
   const parseYaml = (input: string): unknown => {
     const lines = input.split('\n').filter((l) => l.trim() && !l.trim().startsWith('#'));
     const result: Record<string, unknown> = {};
@@ -26,8 +36,29 @@ export function YAMLToJSON() {
     for (const line of lines) {
       const indent = line.search(/\S/);
       const trimmed = line.trim();
-      const colonIdx = trimmed.indexOf(':');
 
+      while (stack.length > 1 && stack[stack.length - 1].indent >= indent) stack.pop();
+      const currentObj = stack[stack.length - 1].obj;
+
+      if (trimmed.startsWith('- ')) {
+        const itemValue = trimmed.substring(2).trim();
+        const existing = currentObj['__list__'];
+        const arr = Array.isArray(existing) ? existing : [];
+        if (!Array.isArray(existing)) { (currentObj as Record<string, unknown>)['__list__'] = arr; }
+        const colonIdx = itemValue.indexOf(':');
+        if (colonIdx !== -1 && !itemValue.startsWith('"')) {
+          const nestedObj: Record<string, unknown> = {};
+          const key = itemValue.substring(0, colonIdx).trim();
+          const val = itemValue.substring(colonIdx + 1).trim();
+          nestedObj[key] = val ? parseValue(val) : {};
+          arr.push(nestedObj);
+        } else {
+          arr.push(itemValue ? parseValue(itemValue) : null);
+        }
+        continue;
+      }
+
+      const colonIdx = trimmed.indexOf(':');
       if (colonIdx === -1) {
         throw new Error(`Invalid YAML line: ${trimmed}`);
       }
@@ -35,26 +66,38 @@ export function YAMLToJSON() {
       const key = trimmed.substring(0, colonIdx).trim();
       const value = trimmed.substring(colonIdx + 1).trim();
 
-      while (stack.length > 1 && stack[stack.length - 1].indent >= indent) stack.pop();
-
-      const currentObj = stack[stack.length - 1].obj;
-
       if (!value) {
         const newObj: Record<string, unknown> = {};
         currentObj[key] = newObj;
         stack.push({ indent, obj: newObj });
       } else {
-        let parsedValue: unknown = value;
-        if (value === 'true') parsedValue = true;
-        else if (value === 'false') parsedValue = false;
-        else if (value === 'null') parsedValue = null;
-        else if (/^-?\d+$/.test(value)) parsedValue = parseInt(value);
-        else if (/^-?\d+\.\d+$/.test(value)) parsedValue = parseFloat(value);
-        else if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) parsedValue = value.slice(1, -1);
-        currentObj[key] = parsedValue;
+        currentObj[key] = parseValue(value);
       }
     }
-    return result;
+
+    const cleanLists = (obj: Record<string, unknown>): unknown => {
+      for (const key of Object.keys(obj)) {
+        const val = obj[key];
+        if (val && typeof val === 'object' && !Array.isArray(val)) {
+          const list = (val as Record<string, unknown>)['__list__'];
+          if (Array.isArray(list)) {
+            obj[key] = list.map((item) =>
+              item && typeof item === 'object' && !Array.isArray(item)
+                ? cleanLists(item as Record<string, unknown>)
+                : item
+            );
+            delete (val as Record<string, unknown>)['__list__'];
+          } else {
+            cleanLists(val as Record<string, unknown>);
+          }
+        }
+      }
+      const topList = obj['__list__'];
+      if (Array.isArray(topList)) return topList;
+      return obj;
+    };
+
+    return cleanLists(result);
   };
 
   return (
@@ -96,17 +139,25 @@ export function JSONToYAML() {
     if (typeof obj === 'string') return `"${obj}"`;
     if (typeof obj === 'number' || typeof obj === 'boolean') return String(obj);
     if (Array.isArray(obj)) {
-      return obj.map((item) => `${spaces}- ${jsonToYaml(item, indent + 1).replace(/^\s+/, '')}`).join('\n');
+      return obj.map((item) => {
+        if (item && typeof item === 'object' && !Array.isArray(item)) {
+          const nested = jsonToYaml(item, indent + 1);
+          const firstLine = nested.split('\n')[0];
+          const restLines = nested.split('\n').slice(1).join('\n');
+          return `${spaces}- ${firstLine}${restLines ? '\n' + restLines : ''}`;
+        }
+        return `${spaces}- ${jsonToYaml(item, indent + 1)}`;
+      }).join('\n');
     }
     if (typeof obj === 'object') {
       return Object.entries(obj as Record<string, unknown>)
         .map(([key, val]) => {
-          if (val && typeof val === 'object' && !Array.isArray(val)) {
-            const nested = jsonToYaml(val, indent + 1);
-            return `${spaces}${key}:\n${nested}`;
-          }
           if (Array.isArray(val)) {
             return `${spaces}${key}:\n${jsonToYaml(val, indent + 1)}`;
+          }
+          if (val && typeof val === 'object') {
+            const nested = jsonToYaml(val, indent + 1);
+            return `${spaces}${key}:\n${nested}`;
           }
           return `${spaces}${key}: ${jsonToYaml(val, indent + 1)}`;
         })
@@ -197,18 +248,20 @@ export function OGTagGenerator() {
   const [type, setType] = useState('website');
   const [output, setOutput] = useState('');
 
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
   const generate = () => {
     const tags: string[] = [];
-    if (title) tags.push(`<meta property="og:title" content="${title}" />`);
-    if (description) tags.push(`<meta property="og:description" content="${description}" />`);
-    if (url) tags.push(`<meta property="og:url" content="${url}" />`);
-    if (image) tags.push(`<meta property="og:image" content="${image}" />`);
-    if (siteName) tags.push(`<meta property="og:site_name" content="${siteName}" />`);
-    if (type) tags.push(`<meta property="og:type" content="${type}" />`);
+    if (title) tags.push(`<meta property="og:title" content="${esc(title)}" />`);
+    if (description) tags.push(`<meta property="og:description" content="${esc(description)}" />`);
+    if (url) tags.push(`<meta property="og:url" content="${esc(url)}" />`);
+    if (image) tags.push(`<meta property="og:image" content="${esc(image)}" />`);
+    if (siteName) tags.push(`<meta property="og:site_name" content="${esc(siteName)}" />`);
+    if (type) tags.push(`<meta property="og:type" content="${esc(type)}" />`);
     if (title) tags.push(`<meta name="twitter:card" content="summary_large_image" />`);
-    if (title) tags.push(`<meta name="twitter:title" content="${title}" />`);
-    if (description) tags.push(`<meta name="twitter:description" content="${description}" />`);
-    if (image) tags.push(`<meta name="twitter:image" content="${image}" />`);
+    if (title) tags.push(`<meta name="twitter:title" content="${esc(title)}" />`);
+    if (description) tags.push(`<meta name="twitter:description" content="${esc(description)}" />`);
+    if (image) tags.push(`<meta name="twitter:image" content="${esc(image)}" />`);
     setOutput(tags.join('\n'));
   };
 
@@ -251,10 +304,12 @@ export function SitemapGenerator() {
   const [changefreq, setChangefreq] = useState('weekly');
   const [priority, setPriority] = useState('0.8');
 
+  const xmlEsc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+
   const generate = () => {
     const urlList = urls.split('\n').map((u) => u.trim()).filter(Boolean);
     const today = new Date().toISOString().split('T')[0];
-    const entries = urlList.map((url) => `  <url>\n    <loc>${url}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`).join('\n');
+    const entries = urlList.map((url) => `  <url>\n    <loc>${xmlEsc(url)}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`).join('\n');
     setOutput(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>`);
   };
 

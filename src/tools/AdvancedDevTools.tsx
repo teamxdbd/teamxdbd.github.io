@@ -18,17 +18,22 @@ export function MarkdownToHTML() {
     html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
     html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
     html = html.replace(/^---$/gm, '<hr/>');
-    html = html.replace(/^- (.+)$/gm, '$1');
-    html = html.replace(/^(\d+)\. (.+)$/gm, '$2');
-    html = html.split('\n').map((line) => {
-      if (/^<(h[1-6]|blockquote|hr|pre)/.test(line.trim())) return line;
-      if (line.startsWith('')) return `<li>${line.slice(1)}</li>`;
-      if (line.startsWith('')) return `<li>${line.slice(1)}</li>`;
-      if (line.trim() === '') return '';
-      return `<p>${line}</p>`;
-    }).join('\n');
-    html = html.replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`);
-    return html.trim();
+    const lines = html.split('\n');
+    const out: string[] = [];
+    let inUl = false;
+    let inOl = false;
+    const closeLists = () => { if (inUl) { out.push('</ul>'); inUl = false; } if (inOl) { out.push('</ol>'); inOl = false; } };
+    for (const line of lines) {
+      const t = line.trim();
+      if (/^<(h[1-6]|blockquote|hr\/>)/.test(t)) { closeLists(); out.push(line); continue; }
+      if (/^- /.test(t)) { if (inOl) { out.push('</ol>'); inOl = false; } if (!inUl) { out.push('<ul>'); inUl = true; } out.push(`<li>${t.replace(/^- /, '')}</li>`); continue; }
+      if (/^\d+\.\s/.test(t)) { if (inUl) { out.push('</ul>'); inUl = false; } if (!inOl) { out.push('<ol>'); inOl = true; } out.push(`<li>${t.replace(/^\d+\.\s/, '')}</li>`); continue; }
+      closeLists();
+      if (t === '') { out.push(''); continue; }
+      out.push(`<p>${line}</p>`);
+    }
+    closeLists();
+    return out.join('\n').trim();
   };
 
   const process = () => { if (input.trim()) setOutput(convert(input)); };
@@ -130,23 +135,24 @@ export function MetaTagGenerator() {
 
   const generate = () => {
     const tags: string[] = [];
-    if (title) { tags.push(`<title>${title}</title>`); tags.push(`<meta name="title" content="${title}" />`); }
-    if (description) tags.push(`<meta name="description" content="${description}" />`);
-    if (keywords) tags.push(`<meta name="keywords" content="${keywords}" />`);
-    if (author) tags.push(`<meta name="author" content="${author}" />`);
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    if (title) { tags.push(`<title>${esc(title)}</title>`); tags.push(`<meta name="title" content="${esc(title)}" />`); }
+    if (description) tags.push(`<meta name="description" content="${esc(description)}" />`);
+    if (keywords) tags.push(`<meta name="keywords" content="${esc(keywords)}" />`);
+    if (author) tags.push(`<meta name="author" content="${esc(author)}" />`);
     tags.push('<meta name="robots" content="index, follow" />');
     tags.push('<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />');
     tags.push('<meta name="viewport" content="width=device-width, initial-scale=1.0" />');
     if (url) {
-      tags.push(`<meta property="og:url" content="${url}" />`);
+      tags.push(`<meta property="og:url" content="${esc(url)}" />`);
       tags.push(`<meta property="og:type" content="website" />`);
-      if (title) tags.push(`<meta property="og:title" content="${title}" />`);
-      if (description) tags.push(`<meta property="og:description" content="${description}" />`);
-      if (image) tags.push(`<meta property="og:image" content="${image}" />`);
+      if (title) tags.push(`<meta property="og:title" content="${esc(title)}" />`);
+      if (description) tags.push(`<meta property="og:description" content="${esc(description)}" />`);
+      if (image) tags.push(`<meta property="og:image" content="${esc(image)}" />`);
       tags.push(`<meta name="twitter:card" content="summary_large_image" />`);
-      if (title) tags.push(`<meta name="twitter:title" content="${title}" />`);
-      if (description) tags.push(`<meta name="twitter:description" content="${description}" />`);
-      if (image) tags.push(`<meta name="twitter:image" content="${image}" />`);
+      if (title) tags.push(`<meta name="twitter:title" content="${esc(title)}" />`);
+      if (description) tags.push(`<meta name="twitter:description" content="${esc(description)}" />`);
+      if (image) tags.push(`<meta name="twitter:image" content="${esc(image)}" />`);
     }
     setOutput(tags.join('\n'));
   };

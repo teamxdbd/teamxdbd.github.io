@@ -51,6 +51,29 @@ export function PDFTextExtractor() {
     setLoading(false);
   };
 
+  const decodePdfString = (s: string): string => {
+    return s
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '')
+      .replace(/\\t/g, '\t')
+      .replace(/\\\(/g, '(')
+      .replace(/\\\)/g, ')')
+      .replace(/\\\\/g, '\\')
+      .replace(/\\(\d{1,3})/g, (_, oct) => String.fromCharCode(parseInt(oct, 8)));
+  };
+
+  const decompressFlate = async (data: Uint8Array): Promise<Uint8Array> => {
+    try {
+      const stream = new Response(new Blob([data])).body;
+      if (!stream) return data;
+      const decompressed = stream.pipeThrough(new DecompressionStream('deflate'));
+      const result = await new Response(decompressed).arrayBuffer();
+      return new Uint8Array(result);
+    } catch {
+      return data;
+    }
+  };
+
   const extractPdfText = async (arrayBuffer: ArrayBuffer): Promise<string> => {
     const bytes = new Uint8Array(arrayBuffer);
     const decoder = new TextDecoder('latin1');
@@ -78,7 +101,7 @@ export function PDFTextExtractor() {
         try {
           const compressed = new Uint8Array(streamContent.length);
           for (let i = 0; i < streamContent.length; i++) compressed[i] = streamContent.charCodeAt(i);
-          const decompressed = decompressFlate(compressed);
+          const decompressed = await decompressFlate(compressed);
           decodedContent = new TextDecoder('latin1').decode(decompressed);
         } catch {
           decodedContent = streamContent;
@@ -142,22 +165,6 @@ export function PDFTextExtractor() {
 
     fullText = pageSections.join('\f') || fullText;
     return fullText.replace(/\f{2,}/g, '\f').trim();
-  };
-
-  const decodePdfString = (s: string): string => {
-    return s
-      .replace(/\\n/g, '\n')
-      .replace(/\\r/g, '')
-      .replace(/\\t/g, '\t')
-      .replace(/\\\(/g, '(')
-      .replace(/\\\)/g, ')')
-      .replace(/\\\\/g, '\\')
-      .replace(/\\(\d{1,3})/g, (_, oct) => String.fromCharCode(parseInt(oct, 8)));
-  };
-
-  // Minimal FlateDecode (zlib) decompression using DecompressionStream
-  const decompressFlate = (data: Uint8Array): Uint8Array => {
-    return data; // Fallback: return as-is if DecompressionStream isn't available
   };
 
   const downloadText = () => {
