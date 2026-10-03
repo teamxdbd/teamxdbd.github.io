@@ -6,218 +6,85 @@ interface HomePageProps {
   onNavigate: (path: string) => void;
 }
 
+const moduleHighlights = [
+  { id: 'dev', label: 'DEV OPS', description: 'Format, decode, inspect, and transform data.', icon: Icons.Code2, tone: 'cyan' },
+  { id: 'web', label: 'RECON', description: 'Analyze domains, headers, DNS, and endpoints.', icon: Icons.RadioTower, tone: 'blue' },
+  { id: 'carding', label: 'SANDBOX LAB', description: 'Use test data for controlled payment QA.', icon: Icons.CreditCard, tone: 'amber' },
+  { id: 'text', label: 'INTEL PROCESSING', description: 'Clean, compare, summarize, and generate text.', icon: Icons.FileSearch, tone: 'emerald' },
+];
+
+const popularSlugs = ['password-generator', 'json-formatter', 'dns-lookup', 'http-header-analyzer', 'subnet-calculator', 'qr-code-generator'];
+
 export function HomePage({ onNavigate }: HomePageProps) {
-  const popularSlugs = [
-    'bkash-charge-calculator',
-    'nagad-charge-calculator',
-    'rocket-charge-calculator',
-    'credit-card-generator',
-    'password-generator',
-    'temp-mail',
-  ];
-  const popularTools = popularSlugs
-    .map((s) => tools.find((t) => t.slug === s))
-    .filter(Boolean) as typeof tools;
+  const popularTools = popularSlugs.map((slug) => tools.find((tool) => tool.slug === slug)).filter(Boolean) as typeof tools;
+  const totalModules = tools.length;
 
   return (
-    <div className="bg-slate-950">
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-slate-800/80">
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage:
-              'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(6, 182, 212, 0.12), transparent), radial-gradient(ellipse 60% 40% at 80% 10%, rgba(37, 99, 235, 0.08), transparent)',
-          }}
-        />
-        <div
-          className="absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
-          }}
-        />
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-semibold mb-6">
-            <Icons.Sparkles className="h-3.5 w-3.5" />
-            One Step Online Tools
+    <div className="min-h-full bg-[#050a12]">
+      <section className="relative overflow-hidden border-b border-cyan-300/10">
+        <div className="absolute inset-0 cyber-grid opacity-40" />
+        <div className="absolute -left-40 top-0 h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="absolute right-0 top-0 h-[32rem] w-[32rem] rounded-full bg-blue-600/10 blur-3xl" />
+        <div className="relative mx-auto grid max-w-[1440px] gap-12 px-4 pb-16 pt-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:pb-24 lg:pt-20">
+          <div className="flex flex-col justify-center">
+            <div className="mb-6 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-300">
+              <span className="h-px w-10 bg-cyan-300" /> Field operations console
+            </div>
+            <h1 className="max-w-3xl text-4xl font-bold leading-[1.04] tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
+              Your toolkit for the <span className="text-cyan-300 text-glow">digital frontier.</span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-400 sm:text-lg">
+              A focused command center for developers, security researchers, and technical operators. Move from signal to result without the clutter.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button onClick={() => onNavigate('/category/dev')} className="primary-button"><Icons.Terminal className="h-4 w-4" /> Open dev ops</button>
+              <button onClick={() => onNavigate('/category/web')} className="secondary-button"><Icons.RadioTower className="h-4 w-4" /> Start recon</button>
+            </div>
+            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-slate-500">
+              <span className="flex items-center gap-2"><span className="status-dot" /> No account required</span>
+              <span className="flex items-center gap-2"><Icons.LockKeyhole className="h-3.5 w-3.5 text-cyan-400" /> Browser-first privacy</span>
+              <span>{totalModules}+ ready modules</span>
+            </div>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.1]">
-            Free Online Web Tools
-          </h1>
-          <p className="mt-5 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            {tools.length}+ free tools for developers, writers, security researchers, and everyday
-            tasks. Fast, private, no sign-up required. Everything runs right in your browser.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <button
-              onClick={() => onNavigate('/category/dev')}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/20 transition-all"
-            >
-              Developer Tools
-            </button>
-            <button
-              onClick={() => onNavigate('/category/text')}
-              className="px-6 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-sm font-semibold hover:bg-slate-700 transition-all"
-            >
-              Text Tools
-            </button>
-            <button
-              onClick={() => onNavigate('/category/carding')}
-              className="px-6 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-sm font-semibold hover:bg-slate-700 transition-all"
-            >
-              Card Testing Tools
-            </button>
-          </div>
-        </div>
-      </section>
 
-      {/* Announcement */}
-      <section className="border-b border-slate-800/60 bg-slate-900/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-center gap-3 text-center">
-          <Icons.Megaphone className="h-4 w-4 text-cyan-400 shrink-0" />
-          <p className="text-sm text-slate-300">
-            Announcement: Get the latest updates, earning opportunities, and free courses on our{' '}
-            <a
-              href="https://t.me/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-cyan-400 hover:text-cyan-300 font-medium underline underline-offset-2"
-            >
-              Telegram channel
-            </a>
-          </p>
-        </div>
-      </section>
-
-      {/* Popular Tools strip */}
-      <section className="border-b border-slate-800/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h2 className="text-sm font-semibold text-slate-300 mb-4 uppercase tracking-wide">
-            Popular Tools
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {popularTools.map((tool) => {
-              const ToolIcon = (Icons[tool.icon as keyof typeof Icons] ??
-                Icons.Wrench) as Icons.LucideIcon;
-              return (
-                <button
-                  key={tool.slug}
-                  onClick={() => onNavigate(`/tool/${tool.slug}`)}
-                  className="group flex items-center gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 hover:bg-slate-800/60 transition-all duration-200"
-                >
-                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-800 group-hover:bg-cyan-500/10 transition-all duration-200 shrink-0">
-                    <ToolIcon className="h-5 w-5 text-slate-400 group-hover:text-cyan-400 transition-colors duration-200" />
-                  </div>
-                  <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors line-clamp-2 leading-snug text-left">
-                    {tool.name}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Category Sections */}
-      {categories.map((cat) => {
-        const catTools = tools.filter((t) => t.category === cat.id);
-        if (catTools.length === 0) return null;
-        const IconComp = (Icons[cat.icon as keyof typeof Icons] ??
-          Icons.Wrench) as Icons.LucideIcon;
-        return (
-          <section key={cat.id} className="border-b border-slate-800/50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500/15 to-blue-600/15 border border-cyan-500/20 shrink-0">
-                    <IconComp className="h-5 w-5 text-cyan-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-white">{cat.name}</h2>
-                    <p className="text-sm text-slate-400 mt-0.5 hidden sm:block">
-                      {cat.description}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => onNavigate(`/category/${cat.id}`)}
-                  className="flex items-center gap-1 text-sm text-cyan-400 hover:text-cyan-300 transition-colors shrink-0 ml-4"
-                >
-                  View All
-                  <Icons.ChevronRight className="h-4 w-4" />
-                </button>
+          <div className="relative flex items-center justify-center lg:justify-end">
+            <div className="console-card w-full max-w-[520px] p-4 sm:p-5">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-300/10 text-cyan-300"><Icons.ShieldCheck className="h-5 w-5" /></span><div><p className="text-sm font-semibold text-white">Workspace monitor</p><p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">session / local</p></div></div>
+                <span className="rounded-full border border-emerald-400/20 bg-emerald-400/5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-emerald-300">stable</span>
               </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-                {catTools.slice(0, 12).map((tool) => {
-                  const ToolIcon = (Icons[tool.icon as keyof typeof Icons] ??
-                    Icons.Wrench) as Icons.LucideIcon;
-                  return (
-                    <button
-                      key={tool.slug}
-                      onClick={() => onNavigate(`/tool/${tool.slug}`)}
-                      className="group relative flex flex-col items-center text-center p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 hover:bg-slate-800/60 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-500/5"
-                    >
-                      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-slate-800 group-hover:bg-cyan-500/10 transition-all duration-200 mb-3 group-hover:scale-105">
-                        <ToolIcon className="h-6 w-6 text-slate-400 group-hover:text-cyan-400 transition-colors duration-200" />
-                      </div>
-                      <h3 className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors line-clamp-2 leading-snug">
-                        {tool.name}
-                      </h3>
-                    </button>
-                  );
-                })}
+              <div className="grid grid-cols-2 gap-3 py-5 sm:grid-cols-4">
+                {[['220+', 'modules'], ['10', 'domains'], ['0', 'sign-ups'], ['24/7', 'ready']].map(([value, label]) => <div key={label} className="rounded-lg border border-white/10 bg-black/20 p-3"><p className="text-xl font-bold text-cyan-300">{value}</p><p className="mt-1 text-[10px] uppercase tracking-widest text-slate-500">{label}</p></div>)}
               </div>
-
-              {catTools.length > 12 && (
-                <div className="mt-4 text-center">
-                  <button
-                    onClick={() => onNavigate(`/category/${cat.id}`)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-cyan-300 hover:border-cyan-500/40 text-sm font-medium transition-all"
-                  >
-                    See all {catTools.length} tools
-                    <Icons.ChevronRight className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        );
-      })}
-
-      {/* Stats */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border border-cyan-500/20 p-8">
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
-              backgroundSize: '40px 40px',
-            }}
-          />
-          <div className="relative grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-            <div>
-              <div className="text-3xl font-bold text-cyan-300">{tools.length}+</div>
-              <div className="text-sm text-slate-400 mt-1">Total Tools</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-cyan-300">{categories.length}</div>
-              <div className="text-sm text-slate-400 mt-1">Categories</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-cyan-300">100%</div>
-              <div className="text-sm text-slate-400 mt-1">Free</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-cyan-300">0</div>
-              <div className="text-sm text-slate-400 mt-1">Sign-ups</div>
+              <div className="rounded-lg border border-cyan-300/10 bg-[#07131e] p-4 font-mono text-xs leading-7 text-slate-400">
+                <p><span className="text-emerald-400">●</span> environment <span className="float-right text-emerald-300">READY</span></p>
+                <p><span className="text-cyan-300">›</span> secure utilities loaded <span className="float-right text-cyan-300">{totalModules}</span></p>
+                <p><span className="text-cyan-300">›</span> workspace mode <span className="float-right text-white">OPERATOR</span></p>
+                <div className="mt-2 h-1 overflow-hidden rounded-full bg-slate-800"><div className="h-full w-[86%] rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400" /></div>
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.15em] text-slate-500"><Icons.Activity className="h-3.5 w-3.5 text-emerald-400" /> All systems nominal</div>
             </div>
           </div>
         </div>
       </section>
+
+      <main className="mx-auto max-w-[1440px] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="mb-6 flex items-end justify-between gap-4"><div><p className="eyebrow">01 / Access points</p><h2 className="section-title">Choose your mission</h2></div><span className="hidden text-xs text-slate-500 sm:block">Curated entry points for fast execution</span></div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {moduleHighlights.map(({ id, label, description, icon: Icon, tone }) => <button key={id} onClick={() => onNavigate(`/category/${id}`)} className={`module-card module-${tone}`}><div className="flex items-start justify-between"><span className="module-icon"><Icon className="h-5 w-5" /></span><Icons.ArrowUpRight className="h-4 w-4 text-slate-600 transition-colors group-hover:text-cyan-300" /></div><div className="mt-8 text-left"><p className="text-[10px] font-bold tracking-[0.2em] text-cyan-300/80">{label}</p><h3 className="mt-2 text-base font-semibold text-white">{categories.find((category) => category.id === id)?.name}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{description}</p></div></button>)}
+        </div>
+
+        <section className="mt-16">
+          <div className="mb-6 flex items-end justify-between gap-4"><div><p className="eyebrow">02 / Frequently deployed</p><h2 className="section-title">Quick launch</h2></div><button onClick={() => onNavigate('/category/dev')} className="text-sm font-medium text-cyan-300 hover:text-white">Browse all modules <Icons.ArrowRight className="ml-1 inline h-4 w-4" /></button></div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {popularTools.map((tool, index) => { const Icon = (Icons[tool.icon as keyof typeof Icons] ?? Icons.Wrench) as Icons.LucideIcon; return <button key={tool.slug} onClick={() => onNavigate(`/tool/${tool.slug}`)} className="tool-row"><span className="tool-index">0{index + 1}</span><span className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-cyan-300"><Icon className="h-5 w-5" /></span><span className="min-w-0 flex-1 text-left"><span className="block truncate text-sm font-semibold text-slate-100">{tool.name}</span><span className="mt-1 block truncate text-xs text-slate-500">{tool.description}</span></span><Icons.ChevronRight className="h-4 w-4 text-slate-600" /></button>; })}
+          </div>
+        </section>
+
+        <section className="mt-16 border-t border-white/10 pt-10">
+          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center"><div><p className="eyebrow">03 / Operator notes</p><h2 className="section-title">Built for focused work.</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">Keep your workflow moving with small, dependable utilities that respect your attention. Use the right module, get the result, move on.</p></div><div className="flex gap-2"><div className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4"><p className="text-2xl font-bold text-white">{categories.length}</p><p className="mt-1 text-xs uppercase tracking-widest text-slate-500">domains</p></div><div className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4"><p className="text-2xl font-bold text-white">100%</p><p className="mt-1 text-xs uppercase tracking-widest text-slate-500">free access</p></div></div></div>
+        </section>
+      </main>
     </div>
   );
 }

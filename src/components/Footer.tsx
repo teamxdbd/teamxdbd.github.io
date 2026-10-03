@@ -30,8 +30,7 @@ export function Footer({ onNavigate }: FooterProps) {
               </span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed mb-4">
-              One Step Online Tools — free tools for developers, writers, researchers, and everyday
-              tasks. Fast, private, no sign-up required.
+              A focused operator toolkit for development, security research, and technical workflows.
             </p>
             <div className="flex items-center gap-3">
               <a
@@ -165,9 +164,9 @@ export function Footer({ onNavigate }: FooterProps) {
 
         <div className="mt-8 pt-8 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-500">
-            &copy; {new Date().getFullYear()} TeamXD. All tools run in your browser.
+            &copy; {new Date().getFullYear()} TeamXD. Built for focused technical work.
           </p>
-          <p className="text-sm text-slate-500">Built with React &amp; Tailwind CSS</p>
+          <p className="text-sm text-slate-500">Operator toolkit / v2.4</p>
         </div>
       </div>
     </footer>

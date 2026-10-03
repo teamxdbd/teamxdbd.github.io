@@ -3,73 +3,41 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    color-scheme: dark;
-  }
+  :root { color-scheme: dark; }
+  html { background: #050a12; scroll-behavior: smooth; }
+  body { min-width: 320px; background: #050a12; color: #e2e8f0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; letter-spacing: -0.01em; }
+  ::selection { background: rgba(34, 211, 238, 0.28); color: #ecfeff; }
+  :focus-visible { outline: 2px solid #22d3ee; outline-offset: 3px; }
+  * { scrollbar-color: #164e63 #050a12; scrollbar-width: thin; }
+}
 
-  html {
-    background: #0a0f1a;
-    scroll-behavior: smooth;
-  }
-
-  body {
-    min-width: 320px;
-    background-color: #0a0f1a;
-    color: #e2e8f0;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    letter-spacing: -0.01em;
-  }
-
-  ::selection {
-    background: rgba(6, 182, 212, 0.3);
-    color: #f0fdfa;
-  }
-
-  :focus-visible {
-    outline: 2px solid #06b6d4;
-    outline-offset: 3px;
-  }
-
-  * {
-    scrollbar-color: #1e3a5f #0a0f1a;
-    scrollbar-width: thin;
-  }
+@layer components {
+  .header-link { @apply flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:bg-white/[0.05] hover:text-cyan-300; }
+  .mobile-link { @apply flex flex-col items-center gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2 py-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 hover:border-cyan-300/30 hover:text-cyan-300; }
+  .primary-button { @apply inline-flex items-center gap-2 rounded-lg border border-cyan-300/40 bg-cyan-300 px-5 py-3 text-sm font-bold text-[#041018] shadow-[0_0_26px_rgba(34,211,238,0.18)] transition-all hover:bg-cyan-200 hover:shadow-[0_0_32px_rgba(34,211,238,0.3)]; }
+  .secondary-button { @apply inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-slate-200 transition-all hover:border-cyan-300/40 hover:bg-cyan-300/10 hover:text-cyan-200; }
+  .console-card { @apply rounded-2xl border border-cyan-300/15 bg-[#091522]/90 shadow-[0_24px_90px_rgba(0,0,0,0.35),0_0_50px_rgba(34,211,238,0.06)]; }
+  .module-card { @apply relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-white/[0.06] hover:shadow-[0_18px_40px_rgba(0,0,0,0.2)]; }
+  .module-card::after { content: ''; @apply absolute -right-12 -top-12 h-32 w-32 rounded-full bg-cyan-300/10 blur-3xl transition-opacity; opacity: 0; }
+  .module-card:hover::after { opacity: 1; }
+  .module-icon { @apply relative z-10 flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-300/20 bg-cyan-300/10 text-cyan-300; }
+  .tool-row { @apply flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.025] p-3 transition-all hover:border-cyan-300/35 hover:bg-cyan-300/[0.05]; }
+  .tool-index { @apply w-6 font-mono text-[10px] text-slate-600; }
+  .eyebrow { @apply text-[10px] font-bold uppercase tracking-[0.24em] text-cyan-300/75; }
+  .section-title { @apply mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl; }
+  .status-dot { @apply h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]; }
+  .text-glow { text-shadow: 0 0 28px rgba(34, 211, 238, 0.2); }
+  .cyber-grid { background-image: linear-gradient(rgba(34,211,238,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.07) 1px, transparent 1px); background-size: 44px 44px; mask-image: linear-gradient(to bottom, black, transparent 82%); }
 }
 
 @layer utilities {
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .animate-fade-in {
-    animation: fadeIn 0.3s ease-out;
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.25s ease-out;
-  }
-
-  .animate-slide-up {
-    animation: slideUp 0.4s ease-out;
-  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+  .animate-scale-in { animation: scaleIn 0.25s ease-out; }
+  .animate-slide-up { animation: slideUp 0.4s ease-out; }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
