@@ -28,9 +28,9 @@ import java.io.InputStream;
 public class MainActivity extends Activity {
 
     private static final String APP_URL = "https://appassets.androidplatform.net/index.html";
-    private static final int NAVY = Color.rgb(2, 9, 7);
-    private static final int SLATE = Color.rgb(7, 20, 14);
-    private static final int CYAN = Color.rgb(74, 222, 128);
+    private static final int NAVY = Color.rgb(5, 10, 18);
+    private static final int SLATE = Color.rgb(9, 21, 34);
+    private static final int CYAN = Color.rgb(103, 232, 249);
     private static final int MUTED = Color.rgb(148, 163, 184);
 
     private WebView webView;
@@ -108,7 +108,7 @@ public class MainActivity extends Activity {
         badge.setTextColor(Color.WHITE);
         badge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         badge.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        badge.setBackgroundColor(Color.rgb(22, 163, 74));
+        badge.setBackgroundColor(Color.rgb(8, 145, 178));
         toolbar.addView(badge, new LinearLayout.LayoutParams(dp(42), dp(42)));
 
         LinearLayout titles = new LinearLayout(this);
@@ -116,14 +116,14 @@ public class MainActivity extends Activity {
         titles.setPadding(dp(12), 0, 0, 0);
 
         TextView title = new TextView(this);
-        title.setText("TeamXD Tools");
+        title.setText("TEAMXD");
         title.setTextColor(Color.WHITE);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         titles.addView(title);
 
         TextView subtitle = new TextView(this);
-        subtitle.setText("Offline-ready toolkit");
+        subtitle.setText("Operator toolkit");
         subtitle.setTextColor(CYAN);
         subtitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
         titles.addView(subtitle);
@@ -157,7 +157,7 @@ public class MainActivity extends Activity {
                 openRoute("/");
             }
         }), new LinearLayout.LayoutParams(0, -1, 1));
-        navigation.addView(createNavigationButton("Explore", new View.OnClickListener() {
+        navigation.addView(createNavigationButton("Missions", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openRoute("/category/dev");
@@ -205,7 +205,7 @@ public class MainActivity extends Activity {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "TeamXD Tools");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "TeamXD Tools — a free offline-ready toolkit for developers, writers, security researchers, and everyday tasks.");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "TEAMXD Operator Toolkit — a focused workspace for development, security research, and technical workflows.");
         startActivity(Intent.createChooser(shareIntent, "Share TeamXD Tools"));
     }
 
