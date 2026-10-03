@@ -1,6 +1,7 @@
 import * as Icons from 'lucide-react';
 import { tools } from '@/data/tools';
 import { categories } from '@/data/categories';
+import { SearchBar } from '@/components/SearchBar';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
@@ -40,7 +41,10 @@ export function HomePage({ onNavigate }: HomePageProps) {
               <button onClick={() => onNavigate('/category/dev')} className="primary-button"><Icons.Terminal className="h-4 w-4" /> Open dev ops</button>
               <button onClick={() => onNavigate('/category/web')} className="secondary-button"><Icons.RadioTower className="h-4 w-4" /> Start recon</button>
             </div>
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-slate-500">
+            <div className="mt-6 max-w-xl">
+              <SearchBar onSelectTool={(slug) => onNavigate(`/tool/${slug}`)} placeholder="Search modules, utilities, references..." />
+            </div>
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-slate-500">
               <span className="flex items-center gap-2"><span className="status-dot" /> No account required</span>
               <span className="flex items-center gap-2"><Icons.LockKeyhole className="h-3.5 w-3.5 text-cyan-400" /> Browser-first privacy</span>
               <span>{totalModules}+ ready modules</span>

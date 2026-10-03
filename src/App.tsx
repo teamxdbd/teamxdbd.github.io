@@ -9,6 +9,7 @@ import { ContactPage, ReportPage } from '@/pages/ContactReportPages';
 
 function App() {
   const { route, navigate } = useHashRoute();
+  const isAndroidShell = typeof navigator !== 'undefined' && navigator.userAgent.includes('TeamXDAndroid');
 
   const renderRoute = () => {
     if (route === '/' || route === '') {
@@ -46,9 +47,9 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
       <TelegramModal />
-      <Header onNavigate={navigate} onSearchSelect={(slug) => navigate(`/tool/${slug}`)} />
+      {!isAndroidShell && <Header onNavigate={navigate} onSearchSelect={(slug) => navigate(`/tool/${slug}`)} />}
       <main className="flex-1">{renderRoute()}</main>
-      <Footer onNavigate={navigate} />
+      {!isAndroidShell && <Footer onNavigate={navigate} />}
     </div>
   );
 }
