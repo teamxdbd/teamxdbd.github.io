@@ -3,7 +3,7 @@ import type { Category } from '@/types';
 export const categories: Category[] = [
   {
     id: 'carding',
-    name: 'Card Testing Tools',
+    name: 'Payment QA Tools',
     description: 'BIN lookup, test card generators, and shared BIN directory for sandbox and educational testing.',
     icon: 'CreditCard',
   },
